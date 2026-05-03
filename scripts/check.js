@@ -3,7 +3,23 @@ import { gameContent } from "../src/lib/content.js";
 import { locales } from "../src/lib/locales.js";
 
 const sceneIds = new Set();
+const chapterIds = new Set();
 const issues = [];
+
+for (const chapter of gameContent.chapters ?? []) {
+  if (chapterIds.has(chapter.id)) {
+    issues.push(`Duplicate chapter id: ${chapter.id}`);
+  }
+  chapterIds.add(chapter.id);
+
+  if (!hasLocaleKey(chapter.titleKey)) {
+    issues.push(`Chapter "${chapter.id}" is missing locale key "${chapter.titleKey}"`);
+  }
+
+  if (!hasLocaleKey(chapter.summaryKey)) {
+    issues.push(`Chapter "${chapter.id}" is missing locale key "${chapter.summaryKey}"`);
+  }
+}
 
 for (const scene of gameContent.scenes) {
   if (sceneIds.has(scene.id)) {
@@ -13,6 +29,12 @@ for (const scene of gameContent.scenes) {
 }
 
 for (const scene of gameContent.scenes) {
+  if (!scene.chapterId) {
+    issues.push(`Scene "${scene.id}" is missing chapterId`);
+  } else if (!chapterIds.has(scene.chapterId)) {
+    issues.push(`Scene "${scene.id}" references missing chapter "${scene.chapterId}"`);
+  }
+
   if (scene.artId && !(scene.artId in art)) {
     issues.push(`Scene "${scene.id}" references missing art "${scene.artId}"`);
   }
@@ -44,6 +66,22 @@ for (const scene of gameContent.scenes) {
   }
 }
 
+for (const chapter of gameContent.chapters ?? []) {
+  if (chapter.implemented && !sceneIds.has(chapter.startSceneId)) {
+    issues.push(
+      `Chapter "${chapter.id}" references missing implemented start scene "${chapter.startSceneId}"`
+    );
+  }
+
+  for (const nextChapterId of chapter.nextChapterIds ?? []) {
+    if (!chapterIds.has(nextChapterId)) {
+      issues.push(
+        `Chapter "${chapter.id}" references missing next chapter "${nextChapterId}"`
+      );
+    }
+  }
+}
+
 for (const key of Object.keys(locales["pt-BR"])) {
   if (!(key in locales.en)) {
     issues.push(`Locale key "${key}" exists in pt-BR but not in en`);
@@ -65,6 +103,7 @@ if (issues.length > 0) {
 }
 
 console.log("THULAK CHECK OK");
+console.log(`Chapters: ${(gameContent.chapters ?? []).length}`);
 console.log(`Scenes: ${gameContent.scenes.length}`);
 console.log(`Locales: ${Object.keys(locales).join(", ")}`);
 

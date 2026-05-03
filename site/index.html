@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A Descoberta de Thulak</title>
+    <meta
+      name="description"
+      content="A Descoberta de Thulak: fantasia sombria em estilo terminal, agora tambem no browser."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="shell__header">
+        <div>
+          <p class="eyebrow">High Fantasy Horror</p>
+          <h1>A Descoberta de Thulak</h1>
+        </div>
+        <div class="header-actions">
+          <button id="menuButton" class="ghost-button" type="button">Menu</button>
+        </div>
+      </header>
+
+      <section class="shell__status" id="statusBar"></section>
+
+      <section class="shell__body">
+        <aside class="visual-panel">
+          <pre id="visualFrame" class="ascii-frame" aria-live="polite"></pre>
+        </aside>
+
+        <section class="content-panel">
+          <div id="screenTitle" class="panel-title"></div>
+          <div id="screenBody" class="panel-body"></div>
+          <div id="choices" class="choices"></div>
+          <div id="metaNote" class="meta-note"></div>
+        </section>
+      </section>
+
+      <footer class="shell__footer">
+        <span id="footerCopy">Terminal Fantasy Engine v0.1</span>
+      </footer>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

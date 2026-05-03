@@ -6,9 +6,57 @@ export const gameContent = {
     flags: [],
     items: []
   },
+  chapters: [
+    {
+      id: "chapter1",
+      titleKey: "chapter.1.title",
+      summaryKey: "chapter.1.summary",
+      startSceneId: "intro_home",
+      nextChapterIds: ["chapter2", "chapter3", "chapter4"],
+      final: false,
+      implemented: true
+    },
+    {
+      id: "chapter2",
+      titleKey: "chapter.2.title",
+      summaryKey: "chapter.2.summary",
+      startSceneId: "chapter2_start",
+      nextChapterIds: ["chapter3", "chapter4", "chapter5"],
+      final: false,
+      implemented: false
+    },
+    {
+      id: "chapter3",
+      titleKey: "chapter.3.title",
+      summaryKey: "chapter.3.summary",
+      startSceneId: "chapter3_start",
+      nextChapterIds: ["chapter2", "chapter4", "chapter5"],
+      final: false,
+      implemented: false
+    },
+    {
+      id: "chapter4",
+      titleKey: "chapter.4.title",
+      summaryKey: "chapter.4.summary",
+      startSceneId: "chapter4_start",
+      nextChapterIds: ["chapter2", "chapter3", "chapter5"],
+      final: false,
+      implemented: false
+    },
+    {
+      id: "chapter5",
+      titleKey: "chapter.5.title",
+      summaryKey: "chapter.5.summary",
+      startSceneId: "chapter5_start",
+      nextChapterIds: [],
+      final: true,
+      implemented: false
+    }
+  ],
   scenes: [
     {
       id: "intro_home",
+      chapterId: "chapter1",
       artId: "grimoire",
       textKey: "scene.intro_home.body",
       choices: [
@@ -27,6 +75,7 @@ export const gameContent = {
     },
     {
       id: "mentor_room",
+      chapterId: "chapter1",
       animationId: "candleFlame",
       artId: "altar",
       textKey: "scene.mentor_room.body",
@@ -50,6 +99,7 @@ export const gameContent = {
     },
     {
       id: "intro_study",
+      chapterId: "chapter1",
       animationId: "grimoirePulse",
       textKey: "scene.intro_study.body",
       choices: [
@@ -75,6 +125,7 @@ export const gameContent = {
     },
     {
       id: "traveler_markings",
+      chapterId: "chapter1",
       animationId: "candleFlame",
       artId: "skull",
       textKey: "scene.traveler_markings.body",
@@ -94,6 +145,7 @@ export const gameContent = {
     },
     {
       id: "shrine_body",
+      chapterId: "chapter1",
       animationId: "candleFlame",
       artId: "altar",
       textKey: "scene.shrine_body.body",
@@ -113,6 +165,7 @@ export const gameContent = {
     },
     {
       id: "whispering_book",
+      chapterId: "chapter1",
       animationId: "skullWhisper",
       artId: "skull",
       textKey: "scene.whispering_book.body",
@@ -143,6 +196,7 @@ export const gameContent = {
     },
     {
       id: "camp_retreat",
+      chapterId: "chapter1",
       animationId: "campfireRest",
       textKey: "scene.camp_retreat.body",
       choices: [
@@ -166,6 +220,7 @@ export const gameContent = {
     },
     {
       id: "threshold_road",
+      chapterId: "chapter1",
       artId: "dungeonGate",
       textKey: "scene.threshold_road.body",
       choices: [
@@ -188,6 +243,7 @@ export const gameContent = {
     },
     {
       id: "war_ossuary",
+      chapterId: "chapter1",
       animationId: "candleFlame",
       artId: "skull",
       textKey: "scene.war_ossuary.body",
@@ -207,6 +263,7 @@ export const gameContent = {
     },
     {
       id: "chapel_yard",
+      chapterId: "chapter1",
       artId: "dungeonGate",
       textKey: "scene.chapel_yard.body",
       choices: [
@@ -234,6 +291,7 @@ export const gameContent = {
     },
     {
       id: "entry_hall",
+      chapterId: "chapter1",
       animationId: "altarGlow",
       artId: "altar",
       textKey: "scene.entry_hall.body",
@@ -259,6 +317,7 @@ export const gameContent = {
     },
     {
       id: "altar_room",
+      chapterId: "chapter1",
       animationId: "altarGlow",
       artId: "altar",
       textKey: "scene.altar_room.body",
@@ -278,6 +337,7 @@ export const gameContent = {
     },
     {
       id: "scroll_vision",
+      chapterId: "chapter1",
       animationId: "altarGlow",
       artId: "altar",
       textKey: "scene.scroll_vision.body",
@@ -297,6 +357,7 @@ export const gameContent = {
     },
     {
       id: "bone_gallery",
+      chapterId: "chapter1",
       animationId: "torchFlicker",
       artId: "corridor",
       textKey: "scene.bone_gallery.body",
@@ -316,6 +377,7 @@ export const gameContent = {
     },
     {
       id: "grave_answer",
+      chapterId: "chapter1",
       animationId: "skullWhisper",
       artId: "skull",
       textKey: "scene.grave_answer.body",
@@ -339,6 +401,7 @@ export const gameContent = {
     },
     {
       id: "torch_corridor",
+      chapterId: "chapter1",
       animationId: "torchFlicker",
       artId: "corridor",
       textKey: "scene.torch_corridor.body",
@@ -361,6 +424,7 @@ export const gameContent = {
     },
     {
       id: "skeleton_clash",
+      chapterId: "chapter1",
       animationId: "skullWhisper",
       artId: "corridor",
       textKey: "scene.skeleton_clash.body",
@@ -384,6 +448,7 @@ export const gameContent = {
     },
     {
       id: "sealed_gate",
+      chapterId: "chapter1",
       animationId: "torchFlicker",
       artId: "corridor",
       textKey: "scene.sealed_gate.body",
@@ -406,6 +471,7 @@ export const gameContent = {
     },
     {
       id: "watcher_door",
+      chapterId: "chapter1",
       animationId: "altarGlow",
       artId: "altar",
       textKey: "scene.watcher_door.body",
@@ -427,6 +493,7 @@ export const gameContent = {
     },
     {
       id: "ending_skeletons",
+      chapterId: "chapter1",
       animationId: "skullWhisper",
       artId: "skull",
       textKey: "scene.ending_skeletons.body",
@@ -441,6 +508,7 @@ export const gameContent = {
     },
     {
       id: "ending_pact",
+      chapterId: "chapter1",
       animationId: "grimoirePulse",
       artId: "grimoire",
       textKey: "scene.ending_pact.body",
@@ -455,6 +523,7 @@ export const gameContent = {
     },
     {
       id: "ending_broken",
+      chapterId: "chapter1",
       animationId: "campfireRest",
       textKey: "scene.ending_broken.body",
       ending: true,
@@ -468,6 +537,7 @@ export const gameContent = {
     },
     {
       id: "ending_allies",
+      chapterId: "chapter1",
       animationId: "candleFlame",
       artId: "altar",
       textKey: "scene.ending_allies.body",
@@ -482,6 +552,7 @@ export const gameContent = {
     },
     {
       id: "ending_cowardice",
+      chapterId: "chapter1",
       animationId: "longRide",
       textKey: "scene.ending_cowardice.body",
       ending: true,

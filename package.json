@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node src/index.js",
     "check": "node scripts/check.js",
-    "story:summary": "node scripts/story-summary.js"
+    "story:summary": "node scripts/story-summary.js",
+    "site:prepare": "node scripts/build-site-data.js",
+    "site:serve": "node scripts/serve-site.js"
   }
 }
