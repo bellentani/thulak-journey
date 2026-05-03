@@ -38,3 +38,4 @@ Este repositorio agora inclui um [AGENTS.md](/Users/fernandobellentani/workspace
 - A versao web vive em [`site`](/Users/fernandobellentani/workspace/bellentani/rpg-cli/site).
 - Os dados compartilhados do jogo sao gerados em [`site/shared-data.js`](/Users/fernandobellentani/workspace/bellentani/rpg-cli/site/shared-data.js) por [`scripts/build-site-data.js`](/Users/fernandobellentani/workspace/bellentani/rpg-cli/scripts/build-site-data.js).
 - Como o site e estatico, ele pode ser publicado em um dominio ou subdominio usando qualquer hospedagem de arquivos estaticos.
+- A configuracao de deploy da Vercel fica em [`vercel.json`](/Users/fernandobellentani/workspace/bellentani/rpg-cli/vercel.json).
