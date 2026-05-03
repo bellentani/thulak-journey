@@ -1,0 +1,12 @@
+{
+  "name": "a-descoberta-de-thulak",
+  "version": "0.1.0",
+  "description": "Terminal RPG old-school inspired by DOS adventures.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js",
+    "check": "node scripts/check.js",
+    "story:summary": "node scripts/story-summary.js"
+  }
+}
