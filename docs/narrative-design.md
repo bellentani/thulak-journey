@@ -110,6 +110,53 @@ estar vendo aquilo pela primeira vez.
 - Jogos posteriores podem tratar da busca pela Gema Azul, dos companheiros, das guerras
   antigas e da lenta erosao mental de Thulak ao longo dos seculos.
 
+## Estrutura de capitulos desta campanha
+
+O arco atual deve ser pensado em `5` capitulos:
+
+1. `Introducao na Jornada`
+   Origem de Thulak, grimorio, luto e primeiro limiar.
+
+2. `As Catacumbas`
+   Exploracao funeraria, pistas, mortos inquietos e itens de acesso.
+
+3. `Nas Masmorras`
+   Pressao fisica, combate, armadilhas, perseguicao e risco de corrupcao mais acelerado.
+
+4. `Os Segredos Ocultos do Passado Milenar`
+   Revelacoes historicas, enigmas, memoria antiga e verdade sobre a Gema Azul.
+
+5. `A Necromancia e Seus Horrores`
+   Capitulo final, sempre por ultimo, centrado na fuga do templo e da biblioteca milenar.
+
+### Regra de progressao
+
+- o jogador sempre comeca no `Capitulo 1`;
+- os capitulos `2`, `3` e `4` podem ser acessados em ordens diferentes;
+- algumas rotas podem saltar do `1` para o `3` ou do `1` para o `4`;
+- o `Capitulo 5` fecha a campanha e nao deve ser pulado.
+
+## Itens e desbloqueios
+
+Itens nao devem servir apenas como colecao. Eles precisam alterar o grafo.
+
+Use itens para:
+
+- liberar escolhas exclusivas;
+- permitir leitura de cifras, epitafios e senhas;
+- abrir passagens trancadas;
+- melhorar uma resposta no modo `d6`;
+- dar contexto para interpretar o horror sem cair de imediato em desvantagem.
+
+Exemplos de bons gating items:
+
+- `chave de osso`;
+- `manuscrito cifrado`;
+- `anel-selo clerical`;
+- `fragmento de mapa`;
+- `lanterna ritual`;
+- `reliquia de Edrin`.
+
 ## Regra de tom
 
 - Horror, mas nunca gratuito.

@@ -42,6 +42,7 @@ Leia tambem:
 
 - `docs/story-background.md`: pano de fundo, temas e jornada do heroi.
 - `docs/narrative-design.md`: estrutura dramatica, corrupcao, d6 opcional e finais.
+- `docs/chapter-structure.md`: campanha em 5 capitulos, ordem semilinear e travas por item.
 
 ## Onde mexer
 
@@ -51,6 +52,7 @@ Leia tambem:
 - `src/lib/art.js`: ASCII art.
 - `docs/story-background.md`: lore canonica de alto nivel.
 - `docs/narrative-design.md`: design canonico da experiencia narrativa.
+- `docs/chapter-structure.md`: macroestrutura da campanha.
 
 ## Convencoes do projeto
 
@@ -63,6 +65,8 @@ Leia tambem:
 - Preserve o eixo central de escolhas: aprofundar-se na loucura ou tentar escapar.
 - Ao introduzir criaturas, descreva-as de forma imersiva e acessivel para quem nao
   conhece fantasia classica.
+- Os capitulos `2`, `3` e `4` podem se cruzar, mas o `5` deve ser sempre o ultimo.
+- Itens devem alterar o que pode ou nao pode ser escolhido, especialmente no modo `d6`.
 
 ## Como interpretar pedidos vagos
 

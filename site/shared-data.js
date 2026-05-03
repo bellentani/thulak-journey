@@ -107,9 +107,73 @@ export const siteData = {
       "flags": [],
       "items": []
     },
+    "chapters": [
+      {
+        "id": "chapter1",
+        "titleKey": "chapter.1.title",
+        "summaryKey": "chapter.1.summary",
+        "startSceneId": "intro_home",
+        "nextChapterIds": [
+          "chapter2",
+          "chapter3",
+          "chapter4"
+        ],
+        "final": false,
+        "implemented": true
+      },
+      {
+        "id": "chapter2",
+        "titleKey": "chapter.2.title",
+        "summaryKey": "chapter.2.summary",
+        "startSceneId": "chapter2_start",
+        "nextChapterIds": [
+          "chapter3",
+          "chapter4",
+          "chapter5"
+        ],
+        "final": false,
+        "implemented": false
+      },
+      {
+        "id": "chapter3",
+        "titleKey": "chapter.3.title",
+        "summaryKey": "chapter.3.summary",
+        "startSceneId": "chapter3_start",
+        "nextChapterIds": [
+          "chapter2",
+          "chapter4",
+          "chapter5"
+        ],
+        "final": false,
+        "implemented": false
+      },
+      {
+        "id": "chapter4",
+        "titleKey": "chapter.4.title",
+        "summaryKey": "chapter.4.summary",
+        "startSceneId": "chapter4_start",
+        "nextChapterIds": [
+          "chapter2",
+          "chapter3",
+          "chapter5"
+        ],
+        "final": false,
+        "implemented": false
+      },
+      {
+        "id": "chapter5",
+        "titleKey": "chapter.5.title",
+        "summaryKey": "chapter.5.summary",
+        "startSceneId": "chapter5_start",
+        "nextChapterIds": [],
+        "final": true,
+        "implemented": false
+      }
+    ],
     "scenes": [
       {
         "id": "intro_home",
+        "chapterId": "chapter1",
         "artId": "grimoire",
         "textKey": "scene.intro_home.body",
         "choices": [
@@ -133,6 +197,7 @@ export const siteData = {
       },
       {
         "id": "mentor_room",
+        "chapterId": "chapter1",
         "animationId": "candleFlame",
         "artId": "altar",
         "textKey": "scene.mentor_room.body",
@@ -167,6 +232,7 @@ export const siteData = {
       },
       {
         "id": "intro_study",
+        "chapterId": "chapter1",
         "animationId": "grimoirePulse",
         "textKey": "scene.intro_study.body",
         "choices": [
@@ -203,6 +269,7 @@ export const siteData = {
       },
       {
         "id": "traveler_markings",
+        "chapterId": "chapter1",
         "animationId": "candleFlame",
         "artId": "skull",
         "textKey": "scene.traveler_markings.body",
@@ -232,6 +299,7 @@ export const siteData = {
       },
       {
         "id": "shrine_body",
+        "chapterId": "chapter1",
         "animationId": "candleFlame",
         "artId": "altar",
         "textKey": "scene.shrine_body.body",
@@ -261,6 +329,7 @@ export const siteData = {
       },
       {
         "id": "whispering_book",
+        "chapterId": "chapter1",
         "animationId": "skullWhisper",
         "artId": "skull",
         "textKey": "scene.whispering_book.body",
@@ -312,6 +381,7 @@ export const siteData = {
       },
       {
         "id": "camp_retreat",
+        "chapterId": "chapter1",
         "animationId": "campfireRest",
         "textKey": "scene.camp_retreat.body",
         "choices": [
@@ -340,6 +410,7 @@ export const siteData = {
       },
       {
         "id": "threshold_road",
+        "chapterId": "chapter1",
         "artId": "dungeonGate",
         "textKey": "scene.threshold_road.body",
         "choices": [
@@ -362,6 +433,7 @@ export const siteData = {
       },
       {
         "id": "war_ossuary",
+        "chapterId": "chapter1",
         "animationId": "candleFlame",
         "artId": "skull",
         "textKey": "scene.war_ossuary.body",
@@ -386,6 +458,7 @@ export const siteData = {
       },
       {
         "id": "chapel_yard",
+        "chapterId": "chapter1",
         "artId": "dungeonGate",
         "textKey": "scene.chapel_yard.body",
         "choices": [
@@ -424,6 +497,7 @@ export const siteData = {
       },
       {
         "id": "entry_hall",
+        "chapterId": "chapter1",
         "animationId": "altarGlow",
         "artId": "altar",
         "textKey": "scene.entry_hall.body",
@@ -459,6 +533,7 @@ export const siteData = {
       },
       {
         "id": "altar_room",
+        "chapterId": "chapter1",
         "animationId": "altarGlow",
         "artId": "altar",
         "textKey": "scene.altar_room.body",
@@ -483,6 +558,7 @@ export const siteData = {
       },
       {
         "id": "scroll_vision",
+        "chapterId": "chapter1",
         "animationId": "altarGlow",
         "artId": "altar",
         "textKey": "scene.scroll_vision.body",
@@ -507,6 +583,7 @@ export const siteData = {
       },
       {
         "id": "bone_gallery",
+        "chapterId": "chapter1",
         "animationId": "torchFlicker",
         "artId": "corridor",
         "textKey": "scene.bone_gallery.body",
@@ -531,6 +608,7 @@ export const siteData = {
       },
       {
         "id": "grave_answer",
+        "chapterId": "chapter1",
         "animationId": "skullWhisper",
         "artId": "skull",
         "textKey": "scene.grave_answer.body",
@@ -569,6 +647,7 @@ export const siteData = {
       },
       {
         "id": "torch_corridor",
+        "chapterId": "chapter1",
         "animationId": "torchFlicker",
         "artId": "corridor",
         "textKey": "scene.torch_corridor.body",
@@ -596,6 +675,7 @@ export const siteData = {
       },
       {
         "id": "skeleton_clash",
+        "chapterId": "chapter1",
         "animationId": "skullWhisper",
         "artId": "corridor",
         "textKey": "scene.skeleton_clash.body",
@@ -634,6 +714,7 @@ export const siteData = {
       },
       {
         "id": "sealed_gate",
+        "chapterId": "chapter1",
         "animationId": "torchFlicker",
         "artId": "corridor",
         "textKey": "scene.sealed_gate.body",
@@ -661,6 +742,7 @@ export const siteData = {
       },
       {
         "id": "watcher_door",
+        "chapterId": "chapter1",
         "animationId": "altarGlow",
         "artId": "altar",
         "textKey": "scene.watcher_door.body",
@@ -687,6 +769,7 @@ export const siteData = {
       },
       {
         "id": "ending_skeletons",
+        "chapterId": "chapter1",
         "animationId": "skullWhisper",
         "artId": "skull",
         "textKey": "scene.ending_skeletons.body",
@@ -705,6 +788,7 @@ export const siteData = {
       },
       {
         "id": "ending_pact",
+        "chapterId": "chapter1",
         "animationId": "grimoirePulse",
         "artId": "grimoire",
         "textKey": "scene.ending_pact.body",
@@ -723,6 +807,7 @@ export const siteData = {
       },
       {
         "id": "ending_broken",
+        "chapterId": "chapter1",
         "animationId": "campfireRest",
         "textKey": "scene.ending_broken.body",
         "ending": true,
@@ -740,6 +825,7 @@ export const siteData = {
       },
       {
         "id": "ending_allies",
+        "chapterId": "chapter1",
         "animationId": "candleFlame",
         "artId": "altar",
         "textKey": "scene.ending_allies.body",
@@ -758,6 +844,7 @@ export const siteData = {
       },
       {
         "id": "ending_cowardice",
+        "chapterId": "chapter1",
         "animationId": "longRide",
         "textKey": "scene.ending_cowardice.body",
         "ending": true,
@@ -807,6 +894,16 @@ export const siteData = {
       "rules.scale_2": "3-4: sucesso parcial, custo moderado ou descoberta inquietante.",
       "rules.scale_3": "5-6: sucesso claro, vantagem ou chance de escapar de algo pior.",
       "rules.note": "O dado e opcional. Se preferir, voce pode simplesmente escolher o que Thulak faz em cada momento.",
+      "chapter.1.title": "Introducao na Jornada",
+      "chapter.1.summary": "A origem de Thulak, o grimorio negro e o primeiro contato com a trilha da Gema Azul.",
+      "chapter.2.title": "As Catacumbas",
+      "chapter.2.summary": "Galerias funerarias, passagens secundarias e os primeiros segredos lacrados pelos mortos.",
+      "chapter.3.title": "Nas Masmorras",
+      "chapter.3.summary": "Salas profundas, rituais interrompidos, sentinelas e caminhos de risco mais direto.",
+      "chapter.4.title": "Os Segredos Ocultos do Passado Milenar",
+      "chapter.4.summary": "A verdade antiga por tras do templo, da guerra e das marcas deixadas pela Gema Azul.",
+      "chapter.5.title": "A Necromancia e Seus Horrores",
+      "chapter.5.summary": "A fuga do templo e da biblioteca milenar, com a necromancia despertando em toda a sua violencia.",
       "menu.subtitle": "Um jovem meio-elfo deixa a infancia para tras e encontra um chamado sombrio.",
       "menu.intro": "Na fronteira fria de Karad-Zhul, Thulak sonha com aventura, pertencimento e um nome proprio no mundo. No dia em que completa vinte anos, um viajante morto e um grimorio proibido colocam esse sonho em rota com algo muito mais antigo.",
       "scene.intro_home.body": "A vila de Freixo da Neblina desperta sob neblina rala e cheiro de lenha molhada. Hoje Thulak completa vinte anos. Meio-elfo, mago novato e protegido tardio de Mestre Edrin, ele se prepara para deixar a vila e buscar seu lugar no mundo. Mas a manha nao amanhece comum: um viajante foi encontrado morto na estrada do norte, e na hospedaria todos sussurram que seu bau traz marcas arcanas.",
@@ -914,6 +1011,16 @@ export const siteData = {
       "rules.scale_2": "3-4: partial success, moderate cost, or an unsettling discovery.",
       "rules.scale_3": "5-6: clear success, advantage, or a chance to escape something worse.",
       "rules.note": "The die is optional. If you prefer, you can simply choose what Thulak does in each moment.",
+      "chapter.1.title": "Introduction to the Journey",
+      "chapter.1.summary": "Thulak's origin, the black grimoire, and his first contact with the trail leading toward the Blue Gem.",
+      "chapter.2.title": "The Catacombs",
+      "chapter.2.summary": "Funerary galleries, secondary passages, and the first secrets sealed away by the dead.",
+      "chapter.3.title": "Within the Dungeons",
+      "chapter.3.summary": "Deeper chambers, interrupted rites, sentinels, and more direct paths of danger.",
+      "chapter.4.title": "The Hidden Secrets of a Millennial Past",
+      "chapter.4.summary": "The ancient truth behind the temple, the war, and the marks left by the Blue Gem.",
+      "chapter.5.title": "Necromancy and Its Horrors",
+      "chapter.5.summary": "The escape from the temple and the millennial library, with necromancy fully awakened.",
       "menu.subtitle": "A young half-elf leaves childhood behind and finds a darker calling.",
       "menu.intro": "On the cold frontier of Karad-Zhul, Thulak dreams of adventure, belonging, and a name of his own. On the day he turns twenty, a dead traveler and a forbidden grimoire put that dream on a path toward something far older.",
       "scene.intro_home.body": "The village of Mistash wakes beneath thin fog and the smell of wet firewood. Today Thulak turns twenty. A half-elf, a novice mage, and the late Master Edrin's last student, he is preparing to leave the village and seek his place in the world. But the morning does not begin as an ordinary one: a traveler has been found dead on the north road, and at the inn everyone whispers that his chest bears arcane marks.",

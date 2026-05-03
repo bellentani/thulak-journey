@@ -57,6 +57,28 @@ de monstros, mas do que Thulak esta disposto a perder para nao perder mais nada.
 5. `Travessia do limiar`: seguir o mapa do grimorio ate a capela soterrada.
 6. `Primeiros testes`: simbolos, esqueletos, vozes e promessas necromanticas.
 
+## Estrutura dos cinco capitulos
+
+1. `Introducao na Jornada`
+   O inicio da queda e da curiosidade. Thulak encontra o grimorio, pisa no templo e
+   percebe que a Gema Azul talvez seja real.
+
+2. `As Catacumbas`
+   O subsolo funerario aprofunda o horror. Aqui a morte ainda fala em sussurros e
+   o jogador encontra itens, chaves e memoria ritual.
+
+3. `Nas Masmorras`
+   O risco se torna mais corporal e urgente. Sentinelas, armadilhas e salas hostis
+   empurram Thulak para decisoes mais violentas ou desesperadas.
+
+4. `Os Segredos Ocultos do Passado Milenar`
+   A fantasia sombria ganha escala historica. O templo deixa de ser apenas ruina e
+   vira prova de um passado muito mais antigo, ligado a guerra e a Gema Azul.
+
+5. `A Necromancia e Seus Horrores`
+   O conhecimento desperto cobra seu preco. A fuga do templo e da biblioteca milenar
+   deve ser o ultimo grande movimento desta campanha.
+
 ## Grandes destinos de Thulak
 
 Ao longo da campanha, Thulak pode caminhar para quatro fins maiores. Eles nao
