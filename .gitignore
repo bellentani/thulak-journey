@@ -92,3 +92,4 @@ temp/
 
 # --- Vercel / deploy local (opcional) ---
 .vercel/
+.future/
