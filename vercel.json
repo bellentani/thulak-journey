@@ -1,6 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run site:prepare",
-  "outputDirectory": "site",
-  "cleanUrls": true
+  "buildCommand": "npm run site:build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/rpg/grimoire",
+      "destination": "/rpg/grimoire/",
+      "permanent": true
+    }
+  ]
 }
