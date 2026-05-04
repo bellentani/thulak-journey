@@ -2,7 +2,7 @@
 
 ## Premissa
 
-`A Descoberta de Thulak` e uma fantasia sombria sobre tentacao, luto e ambicao.
+`Thulak: The Forbidden Grimoire` e uma fantasia sombria sobre tentacao, luto e ambicao.
 O protagonista e um jovem meio-elfo que sai de casa para viver aventuras, mas
 encontra um caminho muito mais perigoso: a promessa de vencer a morte.
 
@@ -106,7 +106,7 @@ precisam ser resolvidos cedo; serao construidos e interpolados ao longo da histo
 
 ## Horizonte da saga
 
-- O fim de `A Descoberta de Thulak` nao encerra a vida de Thulak.
+- O fim de `Thulak: The Forbidden Grimoire` nao encerra a vida de Thulak.
 - Cada encerramento deve fechar um capitulo e abrir a possibilidade de uma nova aventura.
 - A saga completa acompanha seculos da vida do personagem e sua relacao com a `Gema Azul`.
 - No fim de sua longa existencia, Thulak tende a ser tragado pela propria busca, mesmo

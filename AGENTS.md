@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Este repositorio contem um jogo de terminal em estilo DOS chamado `A Descoberta de Thulak`.
+Este repositorio contem um jogo de terminal em estilo DOS chamado `Thulak: The Forbidden Grimoire`.
 
 ## Missao do projeto
 

@@ -1,8 +1,8 @@
-# A Descoberta de Thulak
+# Thulak: The Forbidden Grimoire
 
 ## Introducao em Portugues
 
-`A Descoberta de Thulak` e um jogo narrativo de fantasia sombria, feito para
+`Thulak: The Forbidden Grimoire` e um jogo narrativo de fantasia sombria, feito para
 rodar no terminal com atmosfera old school, inspirado em livros-aventura, RPGs
 em texto e experiencias que lembram a era do DOS. O jogador acompanha Thulak,
 um jovem meio-elfo e mago novato, enquanto ele e atraido por um grimorio de
@@ -15,7 +15,7 @@ O projeto possui duas experiencias paralelas:
 
 ## Introduction in English
 
-`A Descoberta de Thulak` is a dark fantasy narrative game designed to feel like
+`Thulak: The Forbidden Grimoire` is a dark fantasy narrative game designed to feel like
 an old-school terminal adventure. It draws inspiration from gamebooks, classic
 text RPGs, DOS-era atmosphere, ASCII art, ANSI interfaces, and the charm of
 fiction experienced through typed choices and imagination.

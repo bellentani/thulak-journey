@@ -2,7 +2,7 @@
 
 ## Visao geral
 
-`A Descoberta de Thulak` passa a ser uma campanha de `5` capitulos.
+`Thulak: The Forbidden Grimoire` passa a ser uma campanha de `5` capitulos.
 
 O fluxo e semilinear:
 

@@ -1,5 +1,5 @@
 export const gameContent = {
-  title: "A Descoberta de Thulak",
+  title: "Thulak: The Forbidden Grimoire",
   initialLanguage: "pt-BR",
   initialSceneId: "intro_home",
   initialState: {

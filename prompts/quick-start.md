@@ -12,7 +12,7 @@ Use estes pedidos em qualquer agente de codigo:
 
 ## Expandir a historia
 
-`Adicione 2 novas cenas em A Descoberta de Thulak mantendo suspense, alta fantasia e localizacao em pt-BR e en.`
+`Adicione 2 novas cenas em Thulak: The Forbidden Grimoire mantendo suspense, alta fantasia e localizacao em pt-BR e en.`
 
 ## Revisar consistencia
 

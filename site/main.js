@@ -18,10 +18,26 @@ const sceneMap = new Map(gameContent.scenes.map((scene) => [scene.id, scene]));
 const CLI_REPO_URL = "";
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+function detectPreferredLanguage() {
+  const browserLanguages = [...(navigator.languages ?? []), navigator.language].filter(Boolean);
+
+  for (const language of browserLanguages) {
+    const normalized = language.toLowerCase();
+    if (normalized.startsWith("pt")) {
+      return "pt-BR";
+    }
+    if (normalized.startsWith("en")) {
+      return "en";
+    }
+  }
+
+  return gameContent.initialLanguage;
+}
+
 const state = {
   currentMenuAction: "home",
   currentView: "language",
-  language: gameContent.initialLanguage,
+  language: detectPreferredLanguage(),
   motionEnabled: !reducedMotionQuery.matches,
   sceneId: gameContent.initialSceneId,
   flags: new Set(gameContent.initialState.flags),
@@ -253,18 +269,18 @@ function titleForView(view) {
 
 function titleBarText() {
   if (state.currentView === "language") {
-    return "A DESCOBERTA DE THULAK :: LANGUAGE SETUP";
+    return "THULAK: THE FORBIDDEN GRIMOIRE :: LANGUAGE SETUP";
   }
   if (state.currentView === "rules") {
-    return "A DESCOBERTA DE THULAK :: RULES";
+    return "THULAK: THE FORBIDDEN GRIMOIRE :: RULES";
   }
   if (state.currentView === "help") {
-    return "A DESCOBERTA DE THULAK :: KEYBOARD HELP";
+    return "THULAK: THE FORBIDDEN GRIMOIRE :: KEYBOARD HELP";
   }
   if (state.currentView === "scene") {
-    return "A DESCOBERTA DE THULAK :: RUNNING STORY MODE";
+    return "THULAK: THE FORBIDDEN GRIMOIRE :: RUNNING STORY MODE";
   }
-  return "A DESCOBERTA DE THULAK :: DOS RUNTIME";
+  return "THULAK: THE FORBIDDEN GRIMOIRE :: DOS RUNTIME";
 }
 
 function updateChrome() {

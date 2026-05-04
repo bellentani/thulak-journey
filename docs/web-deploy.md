@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Permitir que `A Descoberta de Thulak` rode no browser sem abandonar a versao CLI.
+Permitir que `Thulak: The Forbidden Grimoire` rode no browser sem abandonar a versao CLI.
 
 ## Estrutura
 
