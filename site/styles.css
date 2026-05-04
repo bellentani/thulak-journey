@@ -137,15 +137,10 @@ a {
   display: none;
 }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-  margin-left: auto;
-}
-
-.chrome-button,
 .menu-command {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: 2px solid #2e3440;
   background: #bcc6d4;
   color: #08121f;
@@ -156,23 +151,12 @@ a {
     filter 90ms ease;
 }
 
-.chrome-button:hover,
 .menu-command:hover {
   filter: brightness(1.06);
 }
 
-.chrome-button:active,
 .menu-command:active {
   transform: translateY(1px);
-}
-
-.chrome-button {
-  min-width: 112px;
-  padding: 6px 10px;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
 }
 
 .menu-command {
@@ -188,6 +172,20 @@ a {
 .menu-command.is-active {
   background: var(--dos-blue);
   color: var(--dos-white);
+}
+
+.menu-command__key {
+  display: inline-flex;
+  min-width: 1.4em;
+  justify-content: center;
+  border: 1px solid currentColor;
+  padding: 0 0.2em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.menu-command__label {
+  display: inline-block;
 }
 
 .shell__body {
@@ -358,13 +356,9 @@ a {
   text-transform: uppercase;
 }
 
-.footer-hint {
-  color: #c8e2ff;
-}
-
-.chrome-button:focus-visible,
 .menu-command:focus-visible,
 .choice-button:focus-visible,
+.panel-title:focus-visible,
 .link-button:focus-visible {
   outline: 2px dashed var(--dos-gold);
   outline-offset: 2px;
@@ -400,30 +394,14 @@ a {
     flex-direction: column;
   }
 
-  .header-actions {
-    width: 100%;
-    flex-wrap: wrap;
-    margin-left: 0;
-  }
-
-  .chrome-button {
-    flex: 1 1 180px;
-    min-width: 0;
-    width: auto;
-  }
-
   .shell__status {
     white-space: normal;
     overflow: visible;
     line-height: 1.35;
   }
 
-  .footer-hint {
-    display: none;
-  }
-
   .footer-signature {
-    order: 3;
+    order: 2;
   }
 }
 
@@ -449,13 +427,6 @@ a {
   .menu-bar {
     font-size: 0.78rem;
     padding: 5px 6px;
-  }
-
-  .panel-cap {
-    border-width: 1px;
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.88) inset,
-      0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 
   .visual-panel {
@@ -499,12 +470,6 @@ a {
 
   .choice-button span {
     font-size: 0.8rem;
-  }
-
-  .chrome-button {
-    flex: 1 1 calc(50% - 4px);
-    padding: 7px 8px;
-    font-size: 0.82rem;
   }
 
   .menu-command {

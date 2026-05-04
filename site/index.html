@@ -16,21 +16,17 @@
       <header class="shell__header">
         <div class="title-bar">
           <div id="titleBarLabel" class="title-bar__label">A DESCOBERTA DE THULAK :: DOS RUNTIME</div>
-          <div class="header-actions">
-            <button id="menuButton" class="chrome-button" type="button">MENU</button>
-            <button id="fullscreenButton" class="chrome-button" type="button">FULL SCREEN</button>
-          </div>
         </div>
-        <nav id="menuBar" class="menu-bar" aria-label="Top menu"></nav>
+        <nav id="menuBar" class="menu-bar" aria-label="Primary commands"></nav>
       </header>
 
       <section class="shell__body">
         <aside class="visual-panel">
-          <pre id="visualFrame" class="ascii-frame" aria-live="polite"></pre>
+          <pre id="visualFrame" class="ascii-frame" aria-hidden="true"></pre>
         </aside>
 
         <section class="content-panel">
-          <div id="screenTitle" class="panel-title"></div>
+          <h2 id="screenTitle" class="panel-title" tabindex="-1"></h2>
           <div id="screenBody" class="panel-body"></div>
           <div id="choices" class="choices"></div>
           <div id="metaNote" class="meta-note"></div>
@@ -42,7 +38,6 @@
       <footer class="shell__footer">
         <span id="footerCopy">Terminal Fantasy Engine v0.1</span>
         <span class="footer-signature">A project by Poe Bellentani</span>
-        <span class="footer-hint">F1 Help  F2 Rules  F3 Sound  ENTER Select</span>
       </footer>
     </main>
 
