@@ -6,10 +6,12 @@ const ui = {
   body: document.querySelector("#screenBody"),
   choices: document.querySelector("#choices"),
   footer: document.querySelector("#footerCopy"),
+  fullscreenButton: document.querySelector("#fullscreenButton"),
   menuButton: document.querySelector("#menuButton"),
   metaNote: document.querySelector("#metaNote"),
   statusBar: document.querySelector("#statusBar"),
   title: document.querySelector("#screenTitle"),
+  titleBarLabel: document.querySelector("#titleBarLabel"),
   visualFrame: document.querySelector("#visualFrame")
 };
 
@@ -235,6 +237,36 @@ function titleForView(view) {
   return gameContent.title;
 }
 
+function titleBarText() {
+  if (state.currentView === "language") {
+    return "A DESCOBERTA DE THULAK :: LANGUAGE SETUP";
+  }
+  if (state.currentView === "rules") {
+    return "A DESCOBERTA DE THULAK :: QBASIC RULES BUFFER";
+  }
+  if (state.currentView === "scene") {
+    return "A DESCOBERTA DE THULAK :: RUNNING STORY MODE";
+  }
+  return "A DESCOBERTA DE THULAK :: DOS RUNTIME";
+}
+
+function updateChrome() {
+  ui.menuButton.textContent = state.language === "pt-BR" ? "MENU" : "MENU";
+  ui.fullscreenButton.textContent = document.fullscreenElement ? "WINDOWED" : "FULL SCREEN";
+  ui.titleBarLabel.textContent = titleBarText();
+}
+
+async function toggleFullscreen() {
+  await beep({ duration: 0.03, frequency: 610 });
+
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+    return;
+  }
+
+  await document.documentElement.requestFullscreen();
+}
+
 async function playTransition(animationId) {
   const animation = resolveAnimation(animationId);
   if (!animation?.frames?.length) {
@@ -446,8 +478,8 @@ function renderScene() {
 function render() {
   document.documentElement.lang = state.language;
   updateStatus();
+  updateChrome();
   ui.footer.textContent = t("ui.footer");
-  ui.menuButton.textContent = state.language === "pt-BR" ? "Menu" : "Menu";
 
   if (state.currentView === "language") {
     renderLanguageScreen();
@@ -471,6 +503,14 @@ ui.menuButton.addEventListener("click", async () => {
   state.currentView = "menu";
   await beep({ duration: 0.03, frequency: 620 });
   render();
+});
+
+ui.fullscreenButton.addEventListener("click", () => {
+  void toggleFullscreen();
+});
+
+document.addEventListener("fullscreenchange", () => {
+  updateChrome();
 });
 
 render();
