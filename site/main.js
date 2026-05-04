@@ -7,6 +7,7 @@ const ui = {
   choices: document.querySelector("#choices"),
   footer: document.querySelector("#footerCopy"),
   fullscreenButton: document.querySelector("#fullscreenButton"),
+  menuBar: document.querySelector("#menuBar"),
   menuButton: document.querySelector("#menuButton"),
   metaNote: document.querySelector("#metaNote"),
   statusBar: document.querySelector("#statusBar"),
@@ -19,6 +20,7 @@ const sceneMap = new Map(gameContent.scenes.map((scene) => [scene.id, scene]));
 const CLI_REPO_URL = "";
 
 const state = {
+  currentMenuAction: "file",
   currentView: "language",
   language: gameContent.initialLanguage,
   sceneId: gameContent.initialSceneId,
@@ -231,6 +233,9 @@ function titleForView(view) {
   if (view === "rules") {
     return t("rules.title");
   }
+  if (view === "help") {
+    return "Keyboard Help";
+  }
   if (view === "scene") {
     return gameContent.title;
   }
@@ -247,6 +252,9 @@ function titleBarText() {
   if (state.currentView === "scene") {
     return "A DESCOBERTA DE THULAK :: RUNNING STORY MODE";
   }
+  if (state.currentView === "help") {
+    return "A DESCOBERTA DE THULAK :: KEYBOARD HELP";
+  }
   return "A DESCOBERTA DE THULAK :: DOS RUNTIME";
 }
 
@@ -254,6 +262,128 @@ function updateChrome() {
   ui.menuButton.textContent = state.language === "pt-BR" ? "MENU" : "MENU";
   ui.fullscreenButton.textContent = document.fullscreenElement ? "WINDOWED" : "FULL SCREEN";
   ui.titleBarLabel.textContent = titleBarText();
+}
+
+function getMenuEntries() {
+  return [
+    {
+      id: "file",
+      label: "File",
+      onSelect: async () => {
+        state.currentView = "menu";
+        state.currentMenuAction = "file";
+        await beep({ duration: 0.03, frequency: 620 });
+        render();
+      }
+    },
+    {
+      id: "story",
+      label: "Story",
+      onSelect: async () => {
+        state.sceneId = gameContent.initialSceneId;
+        state.flags = new Set(gameContent.initialState.flags);
+        state.items = new Set(gameContent.initialState.items);
+        state.currentView = "scene";
+        state.currentMenuAction = "story";
+        await beep({ duration: 0.04, frequency: 690 });
+        render();
+      }
+    },
+    {
+      id: "rules",
+      label: "Rules",
+      onSelect: async () => {
+        state.currentView = "rules";
+        state.currentMenuAction = "rules";
+        await beep({ duration: 0.03, frequency: 650 });
+        render();
+      }
+    },
+    {
+      id: "language",
+      label: "Language",
+      onSelect: async () => {
+        state.currentView = "language";
+        state.currentMenuAction = "language";
+        await beep({ duration: 0.03, frequency: 650 });
+        render();
+      }
+    },
+    {
+      id: "sound",
+      label: "Sound",
+      onSelect: async () => {
+        state.soundEnabled = !state.soundEnabled;
+        state.currentMenuAction = "sound";
+        if (state.soundEnabled) {
+          await beep({ duration: 0.03, frequency: 700 });
+        }
+        render();
+      }
+    },
+    {
+      id: "view",
+      label: "View",
+      onSelect: async () => {
+        state.currentMenuAction = "view";
+        await toggleFullscreen();
+      }
+    },
+    {
+      id: "help",
+      label: "Help",
+      onSelect: async () => {
+        state.currentView = "help";
+        state.currentMenuAction = "help";
+        await beep({ duration: 0.03, frequency: 630 });
+        render();
+      }
+    }
+  ];
+}
+
+function renderMenuBar() {
+  const entries = getMenuEntries();
+  ui.menuBar.innerHTML = "";
+
+  for (const entry of entries) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "menu-command";
+    button.dataset.menuId = entry.id;
+    button.textContent = entry.label;
+    if (entry.id === state.currentMenuAction) {
+      button.classList.add("is-active");
+    }
+    button.addEventListener("click", () => {
+      void entry.onSelect();
+    });
+    ui.menuBar.append(button);
+  }
+}
+
+function moveFocusWithin(elements, currentElement, step) {
+  if (!elements.length) {
+    return;
+  }
+
+  const index = Math.max(0, elements.indexOf(currentElement));
+  const nextIndex = (index + step + elements.length) % elements.length;
+  elements[nextIndex].focus();
+}
+
+function focusFirstChoice() {
+  const firstChoice = ui.choices.querySelector("button, a");
+  if (firstChoice) {
+    firstChoice.focus();
+  }
+}
+
+function focusFirstMenuCommand() {
+  const firstCommand = ui.menuBar.querySelector(".menu-command");
+  if (firstCommand) {
+    firstCommand.focus();
+  }
 }
 
 async function toggleFullscreen() {
@@ -286,6 +416,7 @@ async function playTransition(animationId) {
 
 async function onChoiceSelected(choice) {
   await beep({ duration: 0.04, frequency: 740 });
+  state.currentMenuAction = "story";
   if (choice.transitionAnimationId) {
     await playTransition(choice.transitionAnimationId);
   }
@@ -443,6 +574,42 @@ function renderRules() {
       : "The d6 remains optional on the web, just like in the CLI version.";
 }
 
+function renderHelp() {
+  ui.title.textContent = titleForView("help");
+  setStaticVisual(art.title);
+  setBodyHtml(`
+    <div class="stack">
+      <p>${state.language === "pt-BR" ? "Comandos de teclado para navegar como em um software antigo:" : "Keyboard commands for navigating like an old desktop program:"}</p>
+      <ul class="rule-list">
+        <li>${state.language === "pt-BR" ? "Tab: avanca entre botoes, menu superior e escolhas." : "Tab: move forward through top controls, menus, and choices."}</li>
+        <li>${state.language === "pt-BR" ? "Shift + Tab: volta para o elemento anterior." : "Shift + Tab: move back to the previous element."}</li>
+        <li>${state.language === "pt-BR" ? "Arrow Left / Arrow Right: navega entre os itens do menu superior." : "Arrow Left / Arrow Right: move across the top menu commands."}</li>
+        <li>${state.language === "pt-BR" ? "Arrow Up / Arrow Down: navega entre as escolhas da tela atual." : "Arrow Up / Arrow Down: move through the current screen choices."}</li>
+        <li>${state.language === "pt-BR" ? "Enter: executa o comando ou a escolha focada." : "Enter: run the focused command or choice."}</li>
+      </ul>
+    </div>
+  `);
+  setChoices([
+    {
+      label: t("ui.back_to_menu"),
+      description:
+        state.language === "pt-BR"
+          ? "Voltar para a tela principal."
+          : "Return to the opening screen.",
+      onSelect: async () => {
+        state.currentView = "menu";
+        state.currentMenuAction = "file";
+        await beep({ duration: 0.04, frequency: 640 });
+        render();
+      }
+    }
+  ]);
+  ui.metaNote.textContent =
+    state.language === "pt-BR"
+      ? "Setas e Tab agora fazem parte da experiencia do shell."
+      : "Arrow keys and Tab are now part of the shell experience.";
+}
+
 function renderScene() {
   const scene = resolveScene(state.sceneId);
   const visibleChoices = scene.choices.filter((choice) => passesConditions(choice.conditions));
@@ -477,6 +644,7 @@ function renderScene() {
 
 function render() {
   document.documentElement.lang = state.language;
+  renderMenuBar();
   updateStatus();
   updateChrome();
   ui.footer.textContent = t("ui.footer");
@@ -488,6 +656,11 @@ function render() {
 
   if (state.currentView === "rules") {
     renderRules();
+    return;
+  }
+
+  if (state.currentView === "help") {
+    renderHelp();
     return;
   }
 
@@ -511,6 +684,62 @@ ui.fullscreenButton.addEventListener("click", () => {
 
 document.addEventListener("fullscreenchange", () => {
   updateChrome();
+});
+
+document.addEventListener("keydown", (event) => {
+  const menuCommands = [...ui.menuBar.querySelectorAll(".menu-command")];
+  const choices = [...ui.choices.querySelectorAll("button, a")];
+  const chromeButtons = [ui.menuButton, ui.fullscreenButton].filter(Boolean);
+  const activeElement = document.activeElement;
+
+  if (activeElement?.classList?.contains("menu-command")) {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveFocusWithin(menuCommands, activeElement, 1);
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveFocusWithin(menuCommands, activeElement, -1);
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusFirstChoice();
+    }
+    return;
+  }
+
+  if (activeElement?.classList?.contains("choice-button") || activeElement?.classList?.contains("link-button")) {
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      event.preventDefault();
+      moveFocusWithin(choices, activeElement, 1);
+      return;
+    }
+    if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveFocusWithin(choices, activeElement, -1);
+      return;
+    }
+    return;
+  }
+
+  if (activeElement?.classList?.contains("chrome-button")) {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveFocusWithin(chromeButtons, activeElement, 1);
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveFocusWithin(chromeButtons, activeElement, -1);
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusFirstMenuCommand();
+    }
+  }
 });
 
 render();
