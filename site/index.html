@@ -14,23 +14,24 @@
     <div class="scanlines" aria-hidden="true"></div>
     <main class="shell">
       <header class="shell__header">
-        <div>
-          <p class="eyebrow">High Fantasy Horror</p>
-          <h1>A Descoberta de Thulak</h1>
+        <div class="title-bar">
+          <div id="titleBarLabel" class="title-bar__label">A DESCOBERTA DE THULAK :: DOS RUNTIME</div>
+          <div class="header-actions">
+            <button id="menuButton" class="chrome-button" type="button">MENU</button>
+            <button id="fullscreenButton" class="chrome-button" type="button">FULL SCREEN</button>
+          </div>
         </div>
-        <div class="header-actions">
-          <button id="menuButton" class="ghost-button" type="button">Menu</button>
-        </div>
+        <div class="menu-bar">File  Story  Rules  Language  Sound  View  Help</div>
       </header>
-
-      <section class="shell__status" id="statusBar"></section>
 
       <section class="shell__body">
         <aside class="visual-panel">
+          <div class="panel-cap">VISUAL</div>
           <pre id="visualFrame" class="ascii-frame" aria-live="polite"></pre>
         </aside>
 
         <section class="content-panel">
+          <div class="panel-cap">NARRATIVE BUFFER</div>
           <div id="screenTitle" class="panel-title"></div>
           <div id="screenBody" class="panel-body"></div>
           <div id="choices" class="choices"></div>
@@ -38,8 +39,12 @@
         </section>
       </section>
 
+      <section class="shell__status" id="statusBar"></section>
+
       <footer class="shell__footer">
         <span id="footerCopy">Terminal Fantasy Engine v0.1</span>
+        <span class="footer-signature">A project by Poe Bellentani</span>
+        <span class="footer-hint">F1 Help  F2 Rules  F3 Sound  ENTER Select</span>
       </footer>
     </main>
 
