@@ -1,0 +1,94 @@
+# --- Dependências ---
+node_modules/
+
+# --- Artefatos gerados (não versionar; use `npm run site:prepare`) ---
+site/shared-data.js
+
+# --- Variáveis de ambiente e segredos ---
+.env
+.env.*
+!.env.example
+!.env*.example
+*.pem
+*.key
+*.p12
+*.pfx
+.secrets/
+
+# --- Logs e depuração ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.report/
+
+# --- Caches e diretórios de build genéricos ---
+.cache/
+.parcel-cache/
+.turbo/
+.next/
+out/
+dist/
+build/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# --- Ferramentas / testes (futuro) ---
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+.vitest/
+
+# --- Empacotamento / publicação ---
+*.tgz
+*.tar.gz
+
+# --- Sistemas operacionais ---
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Editores e IDEs ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.history/
+
+# --- Temporários e backups ---
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# --- Vercel / deploy local (opcional) ---
+.vercel/
