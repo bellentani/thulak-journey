@@ -145,9 +145,7 @@ a {
 }
 
 .chrome-button,
-.menu-command,
-.choice-button,
-.link-button {
+.menu-command {
   border: 2px solid #2e3440;
   background: #bcc6d4;
   color: #08121f;
@@ -159,16 +157,12 @@ a {
 }
 
 .chrome-button:hover,
-.menu-command:hover,
-.choice-button:hover,
-.link-button:hover {
+.menu-command:hover {
   filter: brightness(1.06);
 }
 
 .chrome-button:active,
-.menu-command:active,
-.choice-button:active,
-.link-button:active {
+.menu-command:active {
   transform: translateY(1px);
 }
 
@@ -263,6 +257,30 @@ a {
   margin-top: 14px;
 }
 
+.choice-button,
+.link-button {
+  border: 1px solid #c6d2e6;
+  background: #000;
+  color: var(--dos-white);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    border-color 90ms ease,
+    color 90ms ease,
+    transform 90ms ease;
+}
+
+.choice-button:hover,
+.link-button:hover {
+  border-color: var(--dos-gold);
+  color: var(--dos-gold);
+}
+
+.choice-button:active,
+.link-button:active {
+  transform: translateY(1px);
+}
+
 .choice-button {
   width: 100%;
   padding: 10px 12px;
@@ -275,12 +293,12 @@ a {
 }
 
 .choice-button strong {
-  color: var(--dos-blue-deep);
+  color: var(--dos-white);
   margin-bottom: 4px;
 }
 
 .choice-button span {
-  color: #213349;
+  color: var(--dos-gray);
   font-size: 0.88rem;
 }
 
