@@ -32,6 +32,8 @@ const seo = {
 const SITE_NAME = "Thulak: The Forbidden Grimoire";
 const DEFAULT_STORY_MODE = "thulak";
 const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
+const GITHUB_REPO_URL = "https://github.com/poebellentani/thulak-journey";
+const GITHUB_README_URL = "https://github.com/poebellentani/thulak-journey#readme";
 
 function analyticsEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function";
@@ -962,8 +964,34 @@ function renderHelp() {
         <li>${state.language === "pt-BR" ? "1 a 9: ativar opcoes numeradas da tela atual" : "1 through 9: activate numbered options on the current screen"}</li>
         <li>${state.language === "pt-BR" ? "Escape: voltar o foco para o menu superior" : "Escape: return focus to the top command bar"}</li>
       </ul>
+      <p>
+        ${state.language === "pt-BR" ? "Projeto no GitHub:" : "Project on GitHub:"}
+        <a id="helpGithubLink" href="${GITHUB_REPO_URL}" target="_blank" rel="noreferrer">GitHub</a>
+      </p>
+      <p>
+        ${state.language === "pt-BR" ? "Leia o README na web:" : "Read the README on the web:"}
+        <a id="helpReadmeLink" href="${GITHUB_README_URL}" target="_blank" rel="noreferrer">README</a>
+      </p>
     </div>
   `);
+
+  const githubLink = document.querySelector("#helpGithubLink");
+  const readmeLink = document.querySelector("#helpReadmeLink");
+  githubLink?.addEventListener("click", () => {
+    trackEvent("story_help_link_click", {
+      link_type: "github_repo",
+      story_mode: state.storyMode,
+      language: state.language
+    });
+  });
+  readmeLink?.addEventListener("click", () => {
+    trackEvent("story_help_link_click", {
+      link_type: "github_readme",
+      story_mode: state.storyMode,
+      language: state.language
+    });
+  });
+
   setChoices([]);
   ui.metaNote.textContent =
     state.language === "pt-BR"
