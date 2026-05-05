@@ -33,6 +33,17 @@ const SITE_NAME = "Thulak: The Forbidden Grimoire";
 const DEFAULT_STORY_MODE = "thulak";
 const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
 
+function analyticsEnabled() {
+  return typeof window !== "undefined" && typeof window.gtag === "function";
+}
+
+function trackEvent(eventName, params = {}) {
+  if (!analyticsEnabled()) {
+    return;
+  }
+  window.gtag("event", eventName, params);
+}
+
 function detectPreferredLanguage() {
   const browserLanguages = [...(navigator.languages ?? []), navigator.language].filter(Boolean);
 
@@ -88,7 +99,9 @@ const state = {
   unlockedModes: new Set([DEFAULT_STORY_MODE, initialStoryMode]),
   pendingNoticeKey:
     initialStoryMode !== DEFAULT_STORY_MODE ? getStoryModeMeta(initialStoryMode).unlockKey : null,
-  konamiIndex: 0
+  konamiIndex: 0,
+  viewedScenes: new Set(),
+  sessionChoiceCount: 0
 };
 
 let currentAnimationFrame = 0;
@@ -166,6 +179,8 @@ function resetProgress() {
   state.sceneId = gameContent.initialSceneId;
   state.flags = new Set(gameContent.initialState.flags);
   state.items = new Set(gameContent.initialState.items);
+  state.viewedScenes = new Set();
+  state.sessionChoiceCount = 0;
 }
 
 function applyEffect(effect) {
@@ -425,6 +440,22 @@ function updateDocumentMetadata() {
   seo.ogLocale?.setAttribute("content", locale);
   seo.ogUrl?.setAttribute("content", canonicalUrl);
   seo.canonical?.setAttribute("href", canonicalUrl);
+}
+
+function trackSceneView(scene, visibleChoices) {
+  const firstTimeInSession = !state.viewedScenes.has(scene.id);
+  if (firstTimeInSession) {
+    state.viewedScenes.add(scene.id);
+  }
+
+  trackEvent("story_scene_view", {
+    scene_id: scene.id,
+    story_mode: state.storyMode,
+    language: state.language,
+    ending: Boolean(scene.ending),
+    visible_choices: visibleChoices.length,
+    first_time_in_session: firstTimeInSession
+  });
 }
 
 function announceScreenChange() {
@@ -762,6 +793,7 @@ async function playTransition(animationId) {
 async function onChoiceSelected(choice) {
   await beep({ duration: 0.04, frequency: 740 });
   state.currentMenuAction = "new_game";
+  const fromSceneId = state.sceneId;
 
   if (choice.transitionAnimationId) {
     await playTransition(choice.transitionAnimationId);
@@ -770,6 +802,18 @@ async function onChoiceSelected(choice) {
   for (const effect of choice.effects ?? []) {
     applyEffect(effect);
   }
+
+  state.sessionChoiceCount += 1;
+  trackEvent("story_choice_selected", {
+    from_scene_id: fromSceneId,
+    to_scene_id: choice.goto,
+    choice_text_key: choice.textKey,
+    story_mode: state.storyMode,
+    language: state.language,
+    has_transition_animation: Boolean(choice.transitionAnimationId),
+    effects_count: (choice.effects ?? []).length,
+    session_choice_count: state.sessionChoiceCount
+  });
 
   state.sceneId = choice.goto;
   state.currentView = "scene";
@@ -963,6 +1007,8 @@ function renderScene() {
     : state.language === "pt-BR"
       ? "Use as setas para mudar de escolha e Enter para confirmar."
       : "Use arrow keys to move between choices and Enter to confirm.";
+
+  trackSceneView(scene, visibleChoices);
 }
 
 function render() {
@@ -1038,6 +1084,12 @@ document.addEventListener("keydown", (event) => {
     const secretResult = feedSecretSequence(event.key);
     if (secretResult === true) {
       event.preventDefault();
+      trackEvent("story_secret_unlock_konami", {
+        method: "konami_code",
+        story_mode_before: state.storyMode,
+        language: state.language,
+        scene_id: state.sceneId
+      });
       activateStoryMode("designer", { showNotice: true });
       void beep({ duration: 0.05, frequency: 760 }).then(() => render());
       return;
@@ -1137,6 +1189,21 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowDown") {
     focusFirstChoice();
   }
+});
+
+if (initialStoryMode !== DEFAULT_STORY_MODE) {
+  trackEvent("story_secret_access_url", {
+    method: "query_mode",
+    mode_id: initialStoryMode,
+    is_secret_mode: initialStoryMode === "designer",
+    language: state.language
+  });
+}
+
+trackEvent("story_session_start", {
+  initial_story_mode: initialStoryMode,
+  language: state.language,
+  reduced_motion_preferred: reducedMotionQuery.matches
 });
 
 render();
