@@ -201,6 +201,18 @@ story architecture.
 npm start
 ```
 
+Direct story-mode launch:
+
+```bash
+npm start -- --designer-mode
+```
+
+Or:
+
+```bash
+npm start -- --mode=designer
+```
+
 ### Browser version
 
 ```bash
@@ -212,6 +224,90 @@ The local site runs at:
 ```text
 http://127.0.0.1:4173
 ```
+
+Direct story-mode launch in the browser:
+
+```text
+http://127.0.0.1:4173/?mode=designer
+```
+
+## Secret Modes and Launch Parameters
+
+The project now supports `narrative variants`: different stories layered on top
+of the same decision graph and structural flow.
+
+The default experience is:
+
+- `Thulak: The Forbidden Grimoire`
+
+The first hidden variant is:
+
+- `The Designer Who Discovered the Terminal`
+
+This secret mode is intentionally a parody. It reuses the same branching
+structure, scene flow, and decision template as the main campaign, but swaps in
+an alternate tone, alternate localization layer, and alternate narrative text.
+
+### CLI launch parameters
+
+Use the standard campaign:
+
+```bash
+npm start
+```
+
+Launch the hidden parody directly:
+
+```bash
+npm start -- --designer-mode
+```
+
+Or use the generic mode parameter:
+
+```bash
+npm start -- --mode=designer
+```
+
+The generic `--mode=...` entry point exists so future narrative variants can be
+plugged into the same structure without changing the launcher pattern.
+
+### Browser launch parameters
+
+Run the local browser version:
+
+```bash
+npm run site:serve
+```
+
+Then open the default campaign:
+
+```text
+http://127.0.0.1:4173/
+```
+
+Open the parody directly:
+
+```text
+http://127.0.0.1:4173/?mode=designer
+```
+
+The `?mode=...` parameter follows the same idea as the CLI `--mode=...`
+parameter so the web and terminal versions stay aligned.
+
+### Konami Code
+
+The hidden parody can also be unlocked manually through the classic
+`Konami Code` in both the CLI and web versions:
+
+```text
+Up, Up, Down, Down, Left, Right, Left, Right, B, A
+```
+
+Notes:
+
+- in the `CLI`, enter the sequence while the game is waiting for menu or story input;
+- in the `web` version, enter the sequence from the keyboard while the page is active;
+- once unlocked, the parody becomes available as a story variant built on the same decision template.
 
 ## Validation and Utility Commands
 
