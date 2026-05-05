@@ -32,8 +32,8 @@ const seo = {
 const SITE_NAME = "Thulak: The Forbidden Grimoire";
 const DEFAULT_STORY_MODE = "thulak";
 const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
-const GITHUB_REPO_URL = "https://github.com/poebellentani/thulak-journey";
-const GITHUB_README_URL = "https://github.com/poebellentani/thulak-journey#readme";
+const GITHUB_REPO_URL = "https://github.com/bellentani/thulak-journey";
+const GITHUB_README_URL = "https://github.com/bellentani/thulak-journey#readme";
 const ABOUT_COPY = {
   "pt-BR": {
     title: "Sobre o Projeto",
