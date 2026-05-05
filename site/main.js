@@ -34,6 +34,36 @@ const DEFAULT_STORY_MODE = "thulak";
 const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
 const GITHUB_REPO_URL = "https://github.com/poebellentani/thulak-journey";
 const GITHUB_README_URL = "https://github.com/poebellentani/thulak-journey#readme";
+const ABOUT_COPY = {
+  "pt-BR": {
+    title: "Sobre o Projeto",
+    intro:
+      "Thulak: The Forbidden Grimoire e um jogo narrativo de fantasia sombria com atmosfera old school inspirada na era DOS.",
+    bullets: [
+      "Duas experiencias paralelas: versao CLI (terminal) e versao web (browser).",
+      "Foco em narrativa ramificada, escolhas numeradas, arte ASCII e tom de horror fantastico.",
+      "Suporte bilingue em pt-BR e en, com estrutura pronta para expansao de capitulos."
+    ],
+    premise:
+      "A historia acompanha Thulak, um jovem meio-elfo e mago novato, atraido por um grimorio proibido e pela lenda da Gema Azul.",
+    ctaRepo: "Repositorio no GitHub:",
+    ctaReadme: "README completo na web:"
+  },
+  en: {
+    title: "About the Project",
+    intro:
+      "Thulak: The Forbidden Grimoire is a dark-fantasy narrative game with an old-school atmosphere inspired by the DOS era.",
+    bullets: [
+      "Two parallel experiences: CLI version (terminal) and web version (browser).",
+      "Focused on branching narrative, numbered choices, ASCII art, and fantasy-horror tone.",
+      "Bilingual support in pt-BR and en, with structure ready for chapter expansion."
+    ],
+    premise:
+      "The story follows Thulak, a young half-elf novice mage drawn to a forbidden grimoire and the legend of the Blue Gem.",
+    ctaRepo: "GitHub repository:",
+    ctaReadme: "Full README on the web:"
+  }
+};
 
 function analyticsEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function";
@@ -366,6 +396,9 @@ function titleForView(view) {
   if (view === "help") {
     return state.language === "pt-BR" ? "Atalhos do Teclado" : "Keyboard Shortcuts";
   }
+  if (view === "about") {
+    return ABOUT_COPY[state.language].title;
+  }
   return currentTitle();
 }
 
@@ -379,6 +412,9 @@ function titleBarText() {
   }
   if (state.currentView === "help") {
     return `${upperTitle} :: KEYBOARD HELP`;
+  }
+  if (state.currentView === "about") {
+    return `${upperTitle} :: PROJECT INFO`;
   }
   if (state.currentView === "scene") {
     return `${upperTitle} :: RUNNING STORY MODE`;
@@ -417,6 +453,9 @@ function documentTitleForView() {
 
   if (state.currentView === "help") {
     return `${currentTitle()} | ${state.language === "pt-BR" ? "Ajuda" : "Help"}`;
+  }
+  if (state.currentView === "about") {
+    return `${currentTitle()} | ${state.language === "pt-BR" ? "Sobre" : "About"}`;
   }
 
   if (state.currentView === "language") {
@@ -584,6 +623,17 @@ async function openHelp() {
   render();
 }
 
+async function openAbout() {
+  state.currentView = "about";
+  state.currentMenuAction = "about";
+  trackEvent("story_about_opened", {
+    story_mode: state.storyMode,
+    language: state.language
+  });
+  await beep({ duration: 0.03, frequency: 635 });
+  render();
+}
+
 async function switchStoryMode(modeId) {
   activateStoryMode(modeId);
   await beep({ duration: 0.04, frequency: 730 });
@@ -664,6 +714,12 @@ function getMenuEntries() {
       label: state.language === "pt-BR" ? "Ajuda" : "Help",
       shortcutLabel: "?",
       onSelect: openHelp
+    },
+    {
+      id: "about",
+      label: state.language === "pt-BR" ? "Sobre" : "About",
+      shortcutLabel: "A",
+      onSelect: openAbout
     }
   ];
 }
@@ -759,7 +815,8 @@ function scheduleFocusRestore() {
     if (
       state.currentView === "menu" ||
       state.currentView === "rules" ||
-      state.currentView === "help"
+      state.currentView === "help" ||
+      state.currentView === "about"
     ) {
       if (focusMenuCommand()) {
         return;
@@ -959,6 +1016,7 @@ function renderHelp() {
         <li>${state.language === "pt-BR" ? "M: Animacao" : "M: Motion"}</li>
         <li>${state.language === "pt-BR" ? "F: Tela Cheia" : "F: Full Screen"}</li>
         <li>${state.language === "pt-BR" ? "?: Ajuda" : "?: Help"}</li>
+        <li>${state.language === "pt-BR" ? "A: Sobre o Projeto" : "A: About the Project"}</li>
         <li>${state.language === "pt-BR" ? "Setas esquerda/direita: navegar no menu superior" : "Left/right arrows: move through the top command bar"}</li>
         <li>${state.language === "pt-BR" ? "Setas cima/baixo: navegar entre escolhas da historia" : "Up/down arrows: move through story choices"}</li>
         <li>${state.language === "pt-BR" ? "1 a 9: ativar opcoes numeradas da tela atual" : "1 through 9: activate numbered options on the current screen"}</li>
@@ -997,6 +1055,48 @@ function renderHelp() {
     state.language === "pt-BR"
       ? "Os atalhos estao ligados e a barra superior e o unico centro de navegacao global."
       : "Shortcuts are active and the top command bar is the only global navigation center.";
+}
+
+function renderAbout() {
+  const copy = ABOUT_COPY[state.language];
+  ui.title.textContent = titleForView("about");
+  setStaticVisual(art.title);
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR" ? "Sem escolhas nesta tela" : "No choices on this screen"
+  );
+
+  const bulletItems = copy.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  setBodyHtml(`
+    <div class="stack">
+      <p>${escapeHtml(copy.intro)}</p>
+      <ul class="rule-list">${bulletItems}</ul>
+      <p>${escapeHtml(copy.premise)}</p>
+      <p>${escapeHtml(copy.ctaRepo)} <a id="aboutGithubLink" href="${GITHUB_REPO_URL}" target="_blank" rel="noreferrer">GitHub</a></p>
+      <p>${escapeHtml(copy.ctaReadme)} <a id="aboutReadmeLink" href="${GITHUB_README_URL}" target="_blank" rel="noreferrer">README</a></p>
+    </div>
+  `);
+
+  document.querySelector("#aboutGithubLink")?.addEventListener("click", () => {
+    trackEvent("story_about_link_click", {
+      link_type: "github_repo",
+      story_mode: state.storyMode,
+      language: state.language
+    });
+  });
+  document.querySelector("#aboutReadmeLink")?.addEventListener("click", () => {
+    trackEvent("story_about_link_click", {
+      link_type: "github_readme",
+      story_mode: state.storyMode,
+      language: state.language
+    });
+  });
+
+  setChoices([]);
+  ui.metaNote.textContent =
+    state.language === "pt-BR"
+      ? "Este resumo vem do README do projeto. Abra os links para aprofundar."
+      : "This summary comes from the project README. Open the links for full details.";
 }
 
 function renderScene() {
@@ -1064,6 +1164,14 @@ function render() {
 
   if (state.currentView === "help") {
     renderHelp();
+    updateDocumentMetadata();
+    announceScreenChange();
+    scheduleFocusRestore();
+    return;
+  }
+
+  if (state.currentView === "about") {
+    renderAbout();
     updateDocumentMetadata();
     announceScreenChange();
     scheduleFocusRestore();
