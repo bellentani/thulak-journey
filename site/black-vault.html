@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Black Vault // Title Art Lab</title>
+    <meta name="robots" content="noindex,nofollow,noarchive,noimageindex" />
+    <meta
+      name="description"
+      content="Internal title-art workbench for Thulak: The Forbidden Grimoire."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="lab-body">
+    <div class="scanlines" aria-hidden="true"></div>
+    <main class="lab-shell">
+      <header class="lab-header">
+        <p class="lab-kicker">BLACK VAULT // INTERNAL ART WORKBENCH</p>
+        <h1 class="lab-title">Forbidden Grimoire Title Lab</h1>
+        <p class="lab-copy">
+          Hidden page for testing this opening image in its original form and as terminal-style ANSI art.
+        </p>
+      </header>
+
+      <section class="lab-grid">
+        <article class="lab-panel">
+          <h2 class="lab-panel__title">Reference PNG</h2>
+          <p class="lab-panel__copy">
+            Exact source image used by the web opening splash.
+          </p>
+          <div class="lab-art-frame">
+            <img
+              class="lab-reference-image"
+              src="./assets/title-splash.png"
+              alt="Reference title splash with blue gem, chained grimoire, candles and skeletal remains."
+            />
+          </div>
+        </article>
+
+        <article class="lab-panel">
+          <h2 class="lab-panel__title">ANSI Reconstruction</h2>
+          <p class="lab-panel__copy">
+            Browser preview of the terminal splash generated from the same image.
+          </p>
+          <div class="lab-ansi-frame">
+            <pre
+              id="ansiPreview"
+              class="ansi-preview"
+              aria-label="ANSI preview of the title splash"
+            ></pre>
+          </div>
+          <p id="ansiStats" class="lab-stats"></p>
+        </article>
+      </section>
+
+      <footer class="lab-footer">
+        <span>Not linked in navigation.</span>
+        <span>Path: <code>/black-vault.html</code></span>
+      </footer>
+    </main>
+
+    <script type="module" src="./title-lab.js"></script>
+  </body>
+</html>

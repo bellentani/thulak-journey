@@ -1,0 +1,11 @@
+{
+  "name": "Thulak: The Forbidden Grimoire",
+  "short_name": "Thulak",
+  "description": "A DOS-inspired dark fantasy text adventure with ASCII atmosphere, branching choices, and bilingual browser support.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#05070a",
+  "theme_color": "#05070a"
+}

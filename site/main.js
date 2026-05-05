@@ -1,8 +1,9 @@
 import { siteData } from "./shared-data.js";
 
-const { animations, art, gameContent, locales } = siteData;
+const { animations, art, gameContent, locales, storyModes, storyModeLocales } = siteData;
 
 const ui = {
+  announcer: document.querySelector("#screenAnnouncer"),
   body: document.querySelector("#screenBody"),
   choices: document.querySelector("#choices"),
   footer: document.querySelector("#footerCopy"),
@@ -11,12 +12,26 @@ const ui = {
   statusBar: document.querySelector("#statusBar"),
   title: document.querySelector("#screenTitle"),
   titleBarLabel: document.querySelector("#titleBarLabel"),
+  visualPoster: document.querySelector("#visualPoster"),
   visualFrame: document.querySelector("#visualFrame")
 };
 
 const sceneMap = new Map(gameContent.scenes.map((scene) => [scene.id, scene]));
-const CLI_REPO_URL = "";
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const seo = {
+  canonical: document.querySelector('link[rel="canonical"]'),
+  description: document.querySelector('meta[name="description"]'),
+  ogDescription: document.querySelector('meta[property="og:description"]'),
+  ogLocale: document.querySelector('meta[property="og:locale"]'),
+  ogTitle: document.querySelector('meta[property="og:title"]'),
+  ogUrl: document.querySelector('meta[property="og:url"]'),
+  twitterDescription: document.querySelector('meta[name="twitter:description"]'),
+  twitterTitle: document.querySelector('meta[name="twitter:title"]')
+};
+
+const SITE_NAME = "Thulak: The Forbidden Grimoire";
+const DEFAULT_STORY_MODE = "thulak";
+const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
 
 function detectPreferredLanguage() {
   const browserLanguages = [...(navigator.languages ?? []), navigator.language].filter(Boolean);
@@ -34,15 +49,46 @@ function detectPreferredLanguage() {
   return gameContent.initialLanguage;
 }
 
+function getStoryModeMeta(modeId) {
+  return storyModes.find((mode) => mode.id === modeId) ?? storyModes[0];
+}
+
+function resolveStoryModeId(value) {
+  if (!value) {
+    return DEFAULT_STORY_MODE;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  for (const mode of storyModes) {
+    if (mode.id === normalized || mode.aliases?.includes(normalized)) {
+      return mode.id;
+    }
+  }
+
+  return DEFAULT_STORY_MODE;
+}
+
+function readInitialStoryMode() {
+  const params = new URLSearchParams(window.location.search);
+  return resolveStoryModeId(params.get("mode"));
+}
+
+const initialStoryMode = readInitialStoryMode();
+
 const state = {
   currentMenuAction: "home",
-  currentView: "language",
+  currentView: initialStoryMode === DEFAULT_STORY_MODE ? "language" : "menu",
   language: detectPreferredLanguage(),
   motionEnabled: !reducedMotionQuery.matches,
   sceneId: gameContent.initialSceneId,
   flags: new Set(gameContent.initialState.flags),
   items: new Set(gameContent.initialState.items),
-  soundEnabled: true
+  soundEnabled: true,
+  storyMode: initialStoryMode,
+  unlockedModes: new Set([DEFAULT_STORY_MODE, initialStoryMode]),
+  pendingNoticeKey:
+    initialStoryMode !== DEFAULT_STORY_MODE ? getStoryModeMeta(initialStoryMode).unlockKey : null,
+  konamiIndex: 0
 };
 
 let currentAnimationFrame = 0;
@@ -50,8 +96,32 @@ let currentAnimationId = null;
 let animationTimer = null;
 let audioContext = null;
 
-function t(key) {
-  return locales[state.language]?.[key] ?? locales.en?.[key] ?? key;
+function translate(key, { modeId = state.storyMode, language = state.language } = {}) {
+  return (
+    storyModeLocales[modeId]?.[language]?.[key] ??
+    storyModeLocales[modeId]?.en?.[key] ??
+    locales[language]?.[key] ??
+    locales.en?.[key] ??
+    key
+  );
+}
+
+function t(key, options = {}) {
+  return translate(key, options);
+}
+
+function currentModeMeta() {
+  return getStoryModeMeta(state.storyMode);
+}
+
+function currentTitle() {
+  return t(currentModeMeta().titleKey, { modeId: state.storyMode });
+}
+
+function availableAlternateModes() {
+  return storyModes.filter(
+    (mode) => state.unlockedModes.has(mode.id) && mode.id !== state.storyMode
+  );
 }
 
 function escapeHtml(value) {
@@ -92,6 +162,12 @@ function passesConditions(conditions = []) {
   });
 }
 
+function resetProgress() {
+  state.sceneId = gameContent.initialSceneId;
+  state.flags = new Set(gameContent.initialState.flags);
+  state.items = new Set(gameContent.initialState.items);
+}
+
 function applyEffect(effect) {
   if (effect.type === "setFlag") {
     state.flags.add(effect.flag);
@@ -104,9 +180,7 @@ function applyEffect(effect) {
   }
 
   if (effect.type === "resetState") {
-    state.sceneId = gameContent.initialSceneId;
-    state.flags = new Set(gameContent.initialState.flags);
-    state.items = new Set(gameContent.initialState.items);
+    resetProgress();
   }
 }
 
@@ -116,17 +190,31 @@ function updateStatus() {
       ? [...state.items].map((item) => t(`item.${item}`)).join(", ")
       : t("ui.none");
 
-  ui.statusBar.textContent = `${t("ui.status_language")}: ${state.language}   ${t("ui.status_items")}: ${items}`;
+  ui.statusBar.textContent = `${t("ui.status_language")}: ${state.language}   ${t("ui.status_story")}: ${t(currentModeMeta().menuKey, { modeId: state.storyMode })}   ${t("ui.status_items")}: ${items}`;
 }
 
 function setBodyHtml(markup) {
   ui.body.innerHTML = markup;
 }
 
+function showPosterVisual() {
+  stopVisualAnimation();
+  ui.visualPoster.classList.remove("hidden");
+  ui.visualFrame.classList.add("hidden");
+}
+
+function showAsciiVisual() {
+  ui.visualPoster.classList.add("hidden");
+  ui.visualFrame.classList.remove("hidden");
+}
+
 function setChoices(actions = []) {
   ui.choices.innerHTML = "";
+  ui.choices.hidden = actions.length === 0;
 
   for (const action of actions) {
+    const item = document.createElement("li");
+    item.className = "choice-item";
     const button = document.createElement(action.href ? "a" : "button");
 
     if (action.href) {
@@ -146,7 +234,8 @@ function setChoices(actions = []) {
       button.textContent = action.label;
     }
 
-    ui.choices.append(button);
+    item.append(button);
+    ui.choices.append(item);
   }
 }
 
@@ -160,6 +249,7 @@ function stopVisualAnimation() {
 
 function setStaticVisual(frame) {
   stopVisualAnimation();
+  showAsciiVisual();
   ui.visualFrame.textContent = frame;
 }
 
@@ -176,6 +266,7 @@ function startVisualAnimation(animationId, { loop = true } = {}) {
   }
 
   stopVisualAnimation();
+  showAsciiVisual();
   currentAnimationId = animationId;
   currentAnimationFrame = 0;
 
@@ -250,10 +341,7 @@ function visualForScene(scene) {
 
 function titleForView(view) {
   if (view === "language") {
-    return "Language";
-  }
-  if (view === "menu") {
-    return state.language === "pt-BR" ? "Inicio" : "Home";
+    return state.language === "pt-BR" ? "Idioma" : "Language";
   }
   if (view === "rules") {
     return t("rules.title");
@@ -261,30 +349,143 @@ function titleForView(view) {
   if (view === "help") {
     return state.language === "pt-BR" ? "Atalhos do Teclado" : "Keyboard Shortcuts";
   }
-  if (view === "scene") {
-    return gameContent.title;
-  }
-  return gameContent.title;
+  return currentTitle();
 }
 
 function titleBarText() {
+  const upperTitle = currentTitle().toUpperCase();
   if (state.currentView === "language") {
-    return "THULAK: THE FORBIDDEN GRIMOIRE :: LANGUAGE SETUP";
+    return `${upperTitle} :: LANGUAGE SETUP`;
   }
   if (state.currentView === "rules") {
-    return "THULAK: THE FORBIDDEN GRIMOIRE :: RULES";
+    return `${upperTitle} :: RULES`;
   }
   if (state.currentView === "help") {
-    return "THULAK: THE FORBIDDEN GRIMOIRE :: KEYBOARD HELP";
+    return `${upperTitle} :: KEYBOARD HELP`;
   }
   if (state.currentView === "scene") {
-    return "THULAK: THE FORBIDDEN GRIMOIRE :: RUNNING STORY MODE";
+    return `${upperTitle} :: RUNNING STORY MODE`;
   }
-  return "THULAK: THE FORBIDDEN GRIMOIRE :: DOS RUNTIME";
+  return `${upperTitle} :: DOS RUNTIME`;
 }
 
 function updateChrome() {
   ui.titleBarLabel.textContent = titleBarText();
+}
+
+function pageDescription() {
+  if (state.storyMode === "designer") {
+    if (state.language === "pt-BR") {
+      return "Parodia secreta em estilo DOS sobre um designer que descobre o terminal, com humor, atmosfera ASCII e escolhas ramificadas.";
+    }
+
+    return "A secret DOS-style parody about a designer discovering the terminal, with humor, ASCII atmosphere, and branching choices.";
+  }
+
+  if (state.language === "pt-BR") {
+    return "Aventura textual de fantasia sombria inspirada em DOS, com atmosfera ASCII, escolhas ramificadas e suporte bilingue no browser.";
+  }
+
+  return "A DOS-inspired dark fantasy text adventure with ASCII atmosphere, branching choices, and bilingual browser support.";
+}
+
+function documentTitleForView() {
+  if (state.currentView === "scene") {
+    return `${currentTitle()} | ${state.language === "pt-BR" ? "Aventura" : "Adventure"}`;
+  }
+
+  if (state.currentView === "rules") {
+    return `${currentTitle()} | ${state.language === "pt-BR" ? "Regras" : "Rules"}`;
+  }
+
+  if (state.currentView === "help") {
+    return `${currentTitle()} | ${state.language === "pt-BR" ? "Ajuda" : "Help"}`;
+  }
+
+  if (state.currentView === "language") {
+    return `${SITE_NAME} | ${state.language === "pt-BR" ? "Idioma" : "Language"}`;
+  }
+
+  return currentTitle();
+}
+
+function updateDocumentMetadata() {
+  const description = pageDescription();
+  const canonicalUrl = new URL(window.location.pathname || "/", window.location.href).href;
+  const locale = state.language === "pt-BR" ? "pt_BR" : "en_US";
+  const title = documentTitleForView();
+
+  document.title = title;
+
+  seo.description?.setAttribute("content", description);
+  seo.ogDescription?.setAttribute("content", description);
+  seo.twitterDescription?.setAttribute("content", description);
+  seo.ogTitle?.setAttribute("content", title);
+  seo.twitterTitle?.setAttribute("content", title);
+  seo.ogLocale?.setAttribute("content", locale);
+  seo.ogUrl?.setAttribute("content", canonicalUrl);
+  seo.canonical?.setAttribute("href", canonicalUrl);
+}
+
+function announceScreenChange() {
+  const announcement = [ui.title.textContent?.trim(), ui.metaNote.textContent?.trim()]
+    .filter(Boolean)
+    .join(". ");
+  ui.announcer.textContent = announcement;
+}
+
+function secretTokenFromKey(key) {
+  const lowered = key.toLowerCase();
+  if (lowered === "arrowup") {
+    return "up";
+  }
+  if (lowered === "arrowdown") {
+    return "down";
+  }
+  if (lowered === "arrowleft") {
+    return "left";
+  }
+  if (lowered === "arrowright") {
+    return "right";
+  }
+  if (lowered === "a" || lowered === "b") {
+    return lowered;
+  }
+  return null;
+}
+
+function feedSecretSequence(key) {
+  const token = secretTokenFromKey(key);
+
+  if (!token) {
+    state.konamiIndex = 0;
+    return false;
+  }
+
+  const expected = KONAMI_SEQUENCE[state.konamiIndex];
+  if (token === expected) {
+    state.konamiIndex += 1;
+    if (state.konamiIndex === KONAMI_SEQUENCE.length) {
+      state.konamiIndex = 0;
+      return true;
+    }
+    return "progress";
+  }
+
+  state.konamiIndex = token === KONAMI_SEQUENCE[0] ? 1 : 0;
+  return state.konamiIndex > 0 ? "progress" : false;
+}
+
+function activateStoryMode(modeId, { showNotice = false } = {}) {
+  state.storyMode = resolveStoryModeId(modeId);
+  state.unlockedModes.add(state.storyMode);
+  resetProgress();
+  state.currentView = "menu";
+  state.currentMenuAction = "home";
+
+  if (showNotice) {
+    state.pendingNoticeKey = getStoryModeMeta(state.storyMode).unlockKey ?? null;
+  }
 }
 
 async function goHome() {
@@ -295,9 +496,7 @@ async function goHome() {
 }
 
 async function startNewGame() {
-  state.sceneId = gameContent.initialSceneId;
-  state.flags = new Set(gameContent.initialState.flags);
-  state.items = new Set(gameContent.initialState.items);
+  resetProgress();
   state.currentView = "scene";
   state.currentMenuAction = "new_game";
   await beep({ duration: 0.04, frequency: 690 });
@@ -352,7 +551,20 @@ async function openHelp() {
   render();
 }
 
+async function switchStoryMode(modeId) {
+  activateStoryMode(modeId);
+  await beep({ duration: 0.04, frequency: 730 });
+  render();
+}
+
 function getMenuEntries() {
+  const modeEntries = availableAlternateModes().map((mode) => ({
+    id: `mode:${mode.id}`,
+    label: t(mode.menuKey, { modeId: mode.id }),
+    shortcutLabel: mode.shortcutLabel,
+    onSelect: () => switchStoryMode(mode.id)
+  }));
+
   return [
     {
       id: "home",
@@ -366,6 +578,7 @@ function getMenuEntries() {
       shortcutLabel: "N",
       onSelect: startNewGame
     },
+    ...modeEntries,
     {
       id: "rules",
       label: state.language === "pt-BR" ? "Regras" : "Rules",
@@ -441,8 +654,25 @@ function renderMenuBar() {
       "aria-label",
       `${entry.label}. ${state.language === "pt-BR" ? "Tecla" : "Key"} ${entry.shortcutLabel}.`
     );
+    button.setAttribute(
+      "aria-keyshortcuts",
+      entry.shortcutLabel === "?" ? "Shift+Slash" : entry.shortcutLabel
+    );
     if (entry.id === state.currentMenuAction) {
       button.classList.add("is-active");
+      button.setAttribute("aria-current", "page");
+    }
+
+    if (entry.id === "sound") {
+      button.setAttribute("aria-pressed", String(state.soundEnabled));
+    }
+
+    if (entry.id === "motion") {
+      button.setAttribute("aria-pressed", String(state.motionEnabled));
+    }
+
+    if (entry.id === "fullscreen") {
+      button.setAttribute("aria-pressed", String(Boolean(document.fullscreenElement)));
     }
     button.addEventListener("click", () => {
       void entry.onSelect();
@@ -493,7 +723,11 @@ function scheduleFocusRestore() {
       }
     }
 
-    if (state.currentView === "menu" || state.currentView === "rules" || state.currentView === "help") {
+    if (
+      state.currentView === "menu" ||
+      state.currentView === "rules" ||
+      state.currentView === "help"
+    ) {
       if (focusMenuCommand()) {
         return;
       }
@@ -544,7 +778,11 @@ async function onChoiceSelected(choice) {
 
 function renderLanguageScreen() {
   ui.title.textContent = titleForView("language");
-  setStaticVisual(art.title);
+  showPosterVisual();
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR" ? "Opcoes de idioma" : "Language options"
+  );
   setBodyHtml(`
     <div class="stack">
       <p>Escolha o idioma antes de entrar em Karad-Zhul.</p>
@@ -583,28 +821,46 @@ function renderLanguageScreen() {
 
 function renderMenu() {
   ui.title.textContent = titleForView("menu");
-  startVisualAnimation("cryptBoot");
+  showPosterVisual();
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR" ? "Sem escolhas nesta tela" : "No choices on this screen"
+  );
   setBodyHtml(`
     <div class="stack">
       <p>${escapeHtml(t("menu.subtitle"))}</p>
       <p>${escapeHtml(t("menu.intro"))}</p>
+      <p><strong>${escapeHtml(t("ui.current_adventure"))}:</strong> ${escapeHtml(
+        t(currentModeMeta().menuKey, { modeId: state.storyMode })
+      )}</p>
     </div>
   `);
   setChoices([]);
 
-  const shortcuts = state.language === "pt-BR"
-    ? "Teclas H inicio, N novo jogo, R regras, L idioma, S som, M animacao, F tela cheia, ? ajuda."
-    : "Keys H home, N new game, R rules, L language, S sound, M motion, F full screen, ? help.";
+  const shortcuts = getMenuEntries()
+    .map((entry) => `${entry.shortcutLabel} ${entry.label}`)
+    .join(", ");
 
-  ui.metaNote.textContent =
+  const noticeKey = state.pendingNoticeKey;
+  state.pendingNoticeKey = null;
+
+  const defaultNote =
     state.language === "pt-BR"
-      ? `Use apenas a barra superior para navegar. ${shortcuts}`
-      : `Use the top command bar as the single navigation surface. ${shortcuts}`;
+      ? `Use apenas a barra superior para navegar. Teclas: ${shortcuts}.`
+      : `Use the top command bar as the single navigation surface. Keys: ${shortcuts}.`;
+
+  ui.metaNote.textContent = noticeKey
+    ? `${t(noticeKey)} ${defaultNote}`
+    : defaultNote;
 }
 
 function renderRules() {
   ui.title.textContent = titleForView("rules");
   startVisualAnimation("campfireRest");
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR" ? "Sem escolhas nesta tela" : "No choices on this screen"
+  );
   setBodyHtml(`
     <div class="stack">
       <p>${escapeHtml(t("rules.intro"))}</p>
@@ -625,19 +881,32 @@ function renderRules() {
   setChoices([]);
   ui.metaNote.textContent =
     state.language === "pt-BR"
-      ? "Use Home ou Novo Jogo na barra superior para continuar."
-      : "Use Home or New Game in the top bar to continue.";
+      ? "Use Home, Novo Jogo ou um atalho de aventura na barra superior para continuar."
+      : "Use Home, New Game, or a story-mode shortcut in the top bar to continue.";
 }
 
 function renderHelp() {
   ui.title.textContent = titleForView("help");
   setStaticVisual(art.title);
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR" ? "Sem escolhas nesta tela" : "No choices on this screen"
+  );
+
+  const modeHelpItems = availableAlternateModes().map(
+    (mode) =>
+      `<li>${escapeHtml(
+        `${mode.shortcutLabel}: ${t(mode.menuKey, { modeId: mode.id })}`
+      )}</li>`
+  );
+
   setBodyHtml(`
     <div class="stack">
       <p>${state.language === "pt-BR" ? "A barra superior concentra os comandos principais do shell:" : "The top command bar concentrates the shell's primary controls:"}</p>
       <ul class="rule-list">
         <li>${state.language === "pt-BR" ? "H: Inicio" : "H: Home"}</li>
         <li>${state.language === "pt-BR" ? "N: Novo Jogo" : "N: New Game"}</li>
+        ${modeHelpItems.join("")}
         <li>${state.language === "pt-BR" ? "R: Regras" : "R: Rules"}</li>
         <li>${state.language === "pt-BR" ? "L: Idioma" : "L: Language"}</li>
         <li>${state.language === "pt-BR" ? "S: Som" : "S: Sound"}</li>
@@ -663,6 +932,12 @@ function renderScene() {
   const visibleChoices = scene.choices.filter((choice) => passesConditions(choice.conditions));
 
   ui.title.textContent = titleForView("scene");
+  ui.choices.setAttribute(
+    "aria-label",
+    state.language === "pt-BR"
+      ? "Escolhas disponiveis nesta cena"
+      : "Available choices in this scene"
+  );
   const visual = visualForScene(scene);
 
   if (visual.kind === "animation") {
@@ -699,29 +974,39 @@ function render() {
 
   if (state.currentView === "language") {
     renderLanguageScreen();
+    updateDocumentMetadata();
+    announceScreenChange();
     scheduleFocusRestore();
     return;
   }
 
   if (state.currentView === "rules") {
     renderRules();
+    updateDocumentMetadata();
+    announceScreenChange();
     scheduleFocusRestore();
     return;
   }
 
   if (state.currentView === "help") {
     renderHelp();
+    updateDocumentMetadata();
+    announceScreenChange();
     scheduleFocusRestore();
     return;
   }
 
   if (state.currentView === "scene") {
     renderScene();
+    updateDocumentMetadata();
+    announceScreenChange();
     scheduleFocusRestore();
     return;
   }
 
   renderMenu();
+  updateDocumentMetadata();
+  announceScreenChange();
   scheduleFocusRestore();
 }
 
@@ -750,20 +1035,26 @@ document.addEventListener("keydown", (event) => {
   const usesModifier = event.altKey || event.ctrlKey || event.metaKey;
 
   if (!usesModifier) {
-    const key = event.key.toLowerCase();
-    const shortcutMap = {
-      h: "home",
-      n: "new_game",
-      r: "rules",
-      l: "language",
-      s: "sound",
-      m: "motion",
-      f: "fullscreen",
-      "/": "help",
-      "?": "help"
-    };
+    const secretResult = feedSecretSequence(event.key);
+    if (secretResult === true) {
+      event.preventDefault();
+      activateStoryMode("designer", { showNotice: true });
+      void beep({ duration: 0.05, frequency: 760 }).then(() => render());
+      return;
+    }
+  }
 
-    const menuId = shortcutMap[key];
+  if (!usesModifier) {
+    const key = event.key.toLowerCase();
+    const shortcutMap = new Map(
+      getMenuEntries().map((entry) => [
+        entry.shortcutLabel === "?" ? "/" : entry.shortcutLabel.toLowerCase(),
+        entry.id
+      ])
+    );
+    shortcutMap.set("?", "help");
+
+    const menuId = shortcutMap.get(key);
     if (menuId) {
       event.preventDefault();
       void findMenuEntry(menuId)?.onSelect();
@@ -819,7 +1110,10 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (activeElement?.classList?.contains("choice-button") || activeElement?.classList?.contains("link-button")) {
+  if (
+    activeElement?.classList?.contains("choice-button") ||
+    activeElement?.classList?.contains("link-button")
+  ) {
     if (event.key === "ArrowDown" || event.key === "ArrowRight") {
       event.preventDefault();
       moveFocusWithin(choices, activeElement, 1);

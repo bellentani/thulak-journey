@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { animations, art } from "../src/lib/art.js";
 import { gameContent } from "../src/lib/content.js";
 import { locales } from "../src/lib/locales.js";
+import { storyModeLocales, storyModes } from "../src/lib/story-modes.js";
 
 const outputUrl = new URL("../site/shared-data.js", import.meta.url);
 
@@ -12,7 +13,9 @@ export async function buildSiteData() {
     art,
     animations,
     gameContent,
-    locales
+    locales,
+    storyModes,
+    storyModeLocales
   };
 
   const fileContents = [

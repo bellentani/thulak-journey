@@ -8,7 +8,7 @@
     "start": "node src/index.js",
     "check": "node scripts/check.js",
     "story:summary": "node scripts/story-summary.js",
-    "site:prepare": "node scripts/build-site-data.js",
+    "site:prepare": "node scripts/build-site-data.js && node scripts/export-title-ansi.js",
     "site:serve": "node scripts/serve-site.js"
   }
 }

@@ -6,8 +6,21 @@ import { ansi, color } from "./ansi.js";
 import { animations, art } from "./art.js";
 import { gameContent } from "./content.js";
 import { locales } from "./locales.js";
+import {
+  defaultStoryModeId,
+  getStoryMode,
+  resolveStoryModeId,
+  storyModeLocales,
+  storyModes
+} from "./story-modes.js";
+import { titleSplashAnsi } from "./title-splash.js";
 
-export function createGame() {
+const KONAMI_SEQUENCE = ["up", "up", "down", "down", "left", "right", "left", "right", "b", "a"];
+const SECRET_SIGNAL = -2;
+
+export function createGame(options = {}) {
+  const requestedStoryMode = resolveStoryModeId(options.storyMode);
+  const skipLanguageSelection = Boolean(options.skipLanguageSelection);
   const sceneMap = new Map(gameContent.scenes.map((scene) => [scene.id, scene]));
   const rl = readline.createInterface({ input, output });
   const supportsLiveInput = Boolean(input.isTTY && typeof input.setRawMode === "function");
@@ -22,11 +35,57 @@ export function createGame() {
     flags: new Set(gameContent.initialState.flags),
     items: new Set(gameContent.initialState.items),
     soundEnabled: true,
-    shouldQuit: false
+    shouldQuit: false,
+    storyMode: requestedStoryMode,
+    unlockedModes: new Set([defaultStoryModeId, requestedStoryMode]),
+    pendingNoticeKey:
+      requestedStoryMode !== defaultStoryModeId ? getStoryMode(requestedStoryMode).unlockKey : null,
+    konamiIndex: 0
   };
 
-  function t(key) {
-    return locales[state.language][key] ?? locales["en"][key] ?? key;
+  function translate(key, { modeId = state.storyMode, language = state.language } = {}) {
+    return (
+      storyModeLocales[modeId]?.[language]?.[key] ??
+      storyModeLocales[modeId]?.en?.[key] ??
+      locales[language]?.[key] ??
+      locales.en?.[key] ??
+      key
+    );
+  }
+
+  function t(key, options = {}) {
+    return translate(key, options);
+  }
+
+  function currentModeMeta() {
+    return getStoryMode(state.storyMode);
+  }
+
+  function currentTitle() {
+    return t(currentModeMeta().titleKey, { modeId: state.storyMode });
+  }
+
+  function availableAlternateModes() {
+    return storyModes.filter(
+      (mode) => state.unlockedModes.has(mode.id) && mode.id !== state.storyMode
+    );
+  }
+
+  function resetProgress() {
+    state.flags = new Set(gameContent.initialState.flags);
+    state.items = new Set(gameContent.initialState.items);
+    state.sceneId = gameContent.initialSceneId;
+  }
+
+  function activateStoryMode(modeId, { showNotice = false } = {}) {
+    const resolvedModeId = resolveStoryModeId(modeId);
+    state.storyMode = resolvedModeId;
+    state.unlockedModes.add(resolvedModeId);
+    resetProgress();
+
+    if (showNotice) {
+      state.pendingNoticeKey = getStoryMode(resolvedModeId).unlockKey ?? null;
+    }
   }
 
   function clearScreen() {
@@ -108,7 +167,7 @@ export function createGame() {
         : t("ui.none");
 
     return color(
-      `${t("ui.status_language")}: ${state.language}   ${t("ui.status_items")}: ${items}`,
+      `${t("ui.status_language")}: ${state.language}   ${t("ui.status_story")}: ${t(currentModeMeta().menuKey, { modeId: state.storyMode })}   ${t("ui.status_items")}: ${items}`,
       ansi.fgYellow
     );
   }
@@ -161,10 +220,44 @@ export function createGame() {
       return;
     }
     if (effect.type === "resetState") {
-      state.flags = new Set(gameContent.initialState.flags);
-      state.items = new Set(gameContent.initialState.items);
-      state.sceneId = gameContent.initialSceneId;
+      resetProgress();
     }
+  }
+
+  function secretTokenFromKey(str, key) {
+    if (key?.name === "up" || key?.name === "down" || key?.name === "left" || key?.name === "right") {
+      return key.name;
+    }
+
+    const lowered = str?.toLowerCase();
+    if (lowered === "a" || lowered === "b") {
+      return lowered;
+    }
+
+    return null;
+  }
+
+  function feedSecretSequence(str, key) {
+    const token = secretTokenFromKey(str, key);
+
+    if (!token) {
+      state.konamiIndex = 0;
+      return false;
+    }
+
+    const expected = KONAMI_SEQUENCE[state.konamiIndex];
+    if (token === expected) {
+      state.konamiIndex += 1;
+      if (state.konamiIndex === KONAMI_SEQUENCE.length) {
+        state.konamiIndex = 0;
+        activateStoryMode("designer", { showNotice: true });
+        return true;
+      }
+      return "progress";
+    }
+
+    state.konamiIndex = token === KONAMI_SEQUENCE[0] ? 1 : 0;
+    return state.konamiIndex > 0 ? "progress" : false;
   }
 
   async function promptEnter() {
@@ -177,11 +270,14 @@ export function createGame() {
     await waitForKeypress();
   }
 
-  async function chooseFrom(options) {
+  async function chooseFrom(options, { secretContext = false } = {}) {
     if (supportsLiveInput) {
-      const choice = await waitForChoiceKey(options.length);
+      const choice = await waitForChoiceKey(options.length, { secretContext });
       if (choice === null) {
         return "quit";
+      }
+      if (choice === SECRET_SIGNAL) {
+        return "__secret__";
       }
       return options[choice];
     }
@@ -195,7 +291,7 @@ export function createGame() {
       await bell(2, 60);
       output.write(`\n${color(t("ui.invalid_option"), ansi.fgRed)}\n`);
       await wait(700);
-      return chooseFrom(options);
+      return chooseFrom(options, { secretContext });
     }
     return options[index];
   }
@@ -266,7 +362,10 @@ export function createGame() {
     });
   }
 
-  async function waitForChoiceKey(optionCount, { allowBack = false } = {}) {
+  async function waitForChoiceKey(
+    optionCount,
+    { allowBack = false, secretContext = false } = {}
+  ) {
     return new Promise((resolve) => {
       const validDigits = new Set(
         Array.from({ length: optionCount }, (_, index) => String(index + 1))
@@ -278,6 +377,19 @@ export function createGame() {
           cleanup();
           resolve(null);
           return;
+        }
+
+        if (secretContext) {
+          const secretState = feedSecretSequence(str, key);
+          if (secretState === true) {
+            void bell(2, 50);
+            cleanup();
+            resolve(SECRET_SIGNAL);
+            return;
+          }
+          if (secretState === "progress") {
+            return;
+          }
         }
 
         if (key?.name === "return" || key?.name === "enter") {
@@ -310,52 +422,111 @@ export function createGame() {
     });
   }
 
+  function buildMenuOptions() {
+    return [
+      {
+        id: "new",
+        label: t("ui.new_game"),
+        detail: t("ui.current_adventure")
+      },
+      ...availableAlternateModes().map((mode) => ({
+        id: `mode:${mode.id}`,
+        modeId: mode.id,
+        label: t(mode.menuKey, { modeId: mode.id }),
+        detail: t(mode.descriptionKey, { modeId: mode.id })
+      })),
+      {
+        id: "rules",
+        label: t("ui.advanced_rules")
+      },
+      {
+        id: "language",
+        label: `${t("ui.language")}: ${state.language}`
+      },
+      {
+        id: "sound",
+        label: `${t("ui.sound")}: ${state.soundEnabled ? t("ui.sound_on") : t("ui.sound_off")}`
+      },
+      {
+        id: "quit",
+        label: t("ui.quit")
+      }
+    ];
+  }
+
   async function renderMenu() {
     clearScreen();
+    const menuTitleArt = output.isTTY ? titleSplashAnsi : art.title;
+    const menuOptions = buildMenuOptions();
+    const noticeKey = state.pendingNoticeKey;
+    state.pendingNoticeKey = null;
 
     const body = [
-      color(art.title, ansi.fgCyan, ansi.bold),
+      menuTitleArt,
       color(t("menu.subtitle"), ansi.fgMagenta),
       "",
       wrapText(t("menu.intro")),
       "",
-      `1. ${t("ui.new_game")}`,
-      `2. ${t("ui.advanced_rules")}`,
-      `3. ${t("ui.language")}: ${state.language}`,
-      `4. ${t("ui.sound")}: ${state.soundEnabled ? t("ui.sound_on") : t("ui.sound_off")}`,
-      `5. ${t("ui.quit")}`,
+      color(
+        `${t("ui.current_adventure")}: ${t(currentModeMeta().menuKey, { modeId: state.storyMode })}`,
+        ansi.fgGreen,
+        ansi.bold
+      ),
+      noticeKey ? color(wrapText(t(noticeKey)), ansi.fgGreen, ansi.bold) : "",
+      "",
+      ...menuOptions.map((option, index) =>
+        option.detail
+          ? `${index + 1}. ${option.label} (${option.detail})`
+          : `${index + 1}. ${option.label}`
+      ),
       "",
       color(t("ui.footer"), ansi.dim)
-    ].join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-    output.write(`${frame(gameContent.title, body)}\n`);
+    output.write(`${frame(currentTitle(), body)}\n`);
     if (supportsLiveInput) {
       output.write(`${color(t("ui.choose_option"), ansi.fgGreen)}\n`);
     }
 
-    const option = await chooseFrom(["new", "rules", "language", "sound", "quit"]);
-    if (option === "new") {
-      state.flags = new Set(gameContent.initialState.flags);
-      state.items = new Set(gameContent.initialState.items);
-      state.sceneId = gameContent.initialSceneId;
+    const option = await chooseFrom(menuOptions, { secretContext: true });
+    if (option === "__secret__") {
+      return renderMenu();
+    }
+
+    if (option === "quit" || option?.id === "quit") {
+      state.shouldQuit = true;
       return;
     }
-    if (option === "rules") {
+
+    if (option?.id === "new") {
+      resetProgress();
+      return;
+    }
+
+    if (option?.id?.startsWith("mode:")) {
+      activateStoryMode(option.modeId);
+      return renderMenu();
+    }
+
+    if (option?.id === "rules") {
       await showAdvancedRules();
       return renderMenu();
     }
-    if (option === "language") {
+
+    if (option?.id === "language") {
       state.language = state.language === "pt-BR" ? "en" : "pt-BR";
       return renderMenu();
     }
-    if (option === "sound") {
+
+    if (option?.id === "sound") {
       state.soundEnabled = !state.soundEnabled;
       if (state.soundEnabled) {
         await bell(1);
       }
       return renderMenu();
     }
-    state.shouldQuit = true;
   }
 
   async function showAdvancedRules() {
@@ -378,7 +549,7 @@ export function createGame() {
       wrapText(t("rules.note"))
     ].join("\n");
 
-    output.write(`${frame(gameContent.title, body)}\n`);
+    output.write(`${frame(currentTitle(), body)}\n`);
     await promptEnter();
   }
 
@@ -419,7 +590,8 @@ export function createGame() {
     delay,
     renderFrame,
     optionCount,
-    allowBack = false
+    allowBack = false,
+    secretContext = false
   }) {
     if (!supportsLiveInput) {
       renderFrame(frames.at(-1) ?? null);
@@ -439,7 +611,7 @@ export function createGame() {
           }, delay)
         : null;
 
-    const selectedIndex = await waitForChoiceKey(optionCount, { allowBack });
+    const selectedIndex = await waitForChoiceKey(optionCount, { allowBack, secretContext });
 
     if (timer) {
       clearInterval(timer);
@@ -456,7 +628,7 @@ export function createGame() {
     const renderFrame = (frameText = null) => {
       clearScreen();
       const body = buildSceneBody(scene, visibleChoices, renderVisualBlock(scene, frameText), true);
-      output.write(`${frame(gameContent.title, body)}\n`);
+      output.write(`${frame(currentTitle(), body)}\n`);
       if (supportsLiveInput) {
         output.write(`${color(t("ui.choose_option"), ansi.fgGreen)}\n`);
       }
@@ -470,12 +642,13 @@ export function createGame() {
         delay: animation?.delay ?? 140,
         renderFrame,
         optionCount: visibleChoices.length,
-        allowBack: true
+        allowBack: true,
+        secretContext: true
       });
       if (index === null) {
         return "menu";
       }
-      if (index === -1) {
+      if (index === SECRET_SIGNAL || index === -1) {
         return "menu";
       }
     } else {
@@ -543,10 +716,13 @@ export function createGame() {
 
   async function run() {
     try {
-      await selectInitialLanguage();
-      if (state.shouldQuit) {
-        return;
+      if (!skipLanguageSelection) {
+        await selectInitialLanguage();
+        if (state.shouldQuit) {
+          return;
+        }
       }
+
       await bootSequence();
       while (!state.shouldQuit) {
         await renderMenu();

@@ -2,17 +2,86 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Thulak: The Forbidden Grimoire</title>
     <meta
       name="description"
-      content="Thulak: The Forbidden Grimoire: fantasia sombria em estilo terminal, agora tambem no browser."
+      content="Thulak: The Forbidden Grimoire is a DOS-inspired dark fantasy text adventure with bilingual support, ASCII atmosphere, and branching choices in the browser."
     />
+    <meta name="author" content="Poe Bellentani" />
+    <meta name="application-name" content="Thulak: The Forbidden Grimoire" />
+    <meta name="apple-mobile-web-app-title" content="Thulak" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#05070a" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="robots"
+      content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="canonical" href="/" />
+    <link rel="alternate" hreflang="pt-BR" href="/" />
+    <link rel="alternate" hreflang="en" href="/" />
+    <link rel="alternate" hreflang="x-default" href="/" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Thulak: The Forbidden Grimoire" />
+    <meta property="og:title" content="Thulak: The Forbidden Grimoire" />
+    <meta
+      property="og:description"
+      content="A DOS-inspired dark fantasy text adventure with bilingual support, ASCII atmosphere, and branching choices."
+    />
+    <meta property="og:url" content="/" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Thulak: The Forbidden Grimoire" />
+    <meta
+      name="twitter:description"
+      content="A DOS-inspired dark fantasy text adventure with bilingual support, ASCII atmosphere, and branching choices."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Thulak: The Forbidden Grimoire",
+        "genre": ["Dark Fantasy", "Interactive Fiction", "Text Adventure"],
+        "gamePlatform": "Web Browser",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "inLanguage": ["pt-BR", "en"],
+        "author": {
+          "@type": "Person",
+          "name": "Poe Bellentani"
+        },
+        "isAccessibleForFree": true,
+        "accessibilityFeature": [
+          "fullKeyboardControl",
+          "highContrastDisplay",
+          "readingOrder",
+          "reducedMotion"
+        ],
+        "description": "Thulak: The Forbidden Grimoire is a DOS-inspired dark fantasy text adventure with bilingual support, ASCII atmosphere, and branching choices in the browser."
+      }
+    </script>
+    <!-- Google Analytics (optional): paste your gtag.js snippet below this line. -->
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#screenTitle">Pular para o conteudo / Skip to content</a>
+    <noscript>
+      <div class="noscript-banner">
+        Este jogo precisa de JavaScript para funcionar no browser. This game needs JavaScript to run in the browser.
+      </div>
+    </noscript>
     <div class="scanlines" aria-hidden="true"></div>
-    <main class="shell">
+    <main class="shell" aria-describedby="appSummary">
+      <h1 class="sr-only">Thulak: The Forbidden Grimoire</h1>
+      <p id="appSummary" class="sr-only">
+        DOS-inspired bilingual browser adventure with keyboard navigation, branching story choices, and accessibility-focused controls.
+      </p>
       <header class="shell__header">
         <div class="title-bar">
           <div id="titleBarLabel" class="title-bar__label">THULAK: THE FORBIDDEN GRIMOIRE :: DOS RUNTIME</div>
@@ -21,25 +90,32 @@
       </header>
 
       <section class="shell__body">
-        <aside class="visual-panel">
+        <aside class="visual-panel" aria-hidden="true">
+          <img
+            id="visualPoster"
+            class="visual-poster hidden"
+            src="./assets/title-splash.png"
+            alt=""
+          />
           <pre id="visualFrame" class="ascii-frame" aria-hidden="true"></pre>
         </aside>
 
-        <section class="content-panel">
+        <section class="content-panel" aria-labelledby="screenTitle" aria-describedby="metaNote">
           <h2 id="screenTitle" class="panel-title" tabindex="-1"></h2>
           <div id="screenBody" class="panel-body"></div>
-          <div id="choices" class="choices"></div>
-          <div id="metaNote" class="meta-note"></div>
+          <ol id="choices" class="choices" aria-label="Available choices"></ol>
+          <div id="metaNote" class="meta-note" role="note"></div>
         </section>
       </section>
 
-      <section class="shell__status" id="statusBar"></section>
+      <section class="shell__status" id="statusBar" role="status" aria-live="polite"></section>
 
       <footer class="shell__footer">
         <span id="footerCopy">Terminal Fantasy Engine v0.1</span>
         <span class="footer-signature">A project by Poe Bellentani</span>
       </footer>
     </main>
+    <div id="screenAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module" src="./main.js"></script>
   </body>
