@@ -142,6 +142,7 @@ story architecture.
 ├── prompts/
 ├── scripts/
 ├── site/
+├── story/
 ├── src/
 ├── package.json
 └── vercel.json
@@ -163,6 +164,10 @@ story architecture.
 
 - `site/`
   Browser version of the project.
+
+- `story/`
+  Human-friendly writing workspace for drafting chapters, scenes, and decisions
+  before converting them into the playable graph.
 
 - `scripts/check.js`
   Validation script for story graph integrity and localization consistency.

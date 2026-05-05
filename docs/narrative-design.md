@@ -24,6 +24,11 @@ tentacao real de seguir adiante.
    Monstros e criaturas fantasticas devem ser descritos como se o leitor pudesse nao
    conhecer aquele imaginario.
 
+5. `Imersao em segunda pessoa`
+   A narracao deve preferir `segunda pessoa no presente`, tratando o jogador como
+   o proprio Thulak: `voce entra`, `voce sente`, `voce hesita`, `you step`,
+   `you feel`, `you choose`.
+
 ## Eixos de progresso
 
 Para futuros capitulos, vale rastrear pelo menos estes vetores:
@@ -44,6 +49,20 @@ Toda sequencia importante deve tentar oferecer pelo menos dois destes tipos:
 - `escolha de resistencia`: recuo, prudencia, compaixao ou sacrificio.
 - `escolha de curiosidade`: investigar algo sem saber se isso corrompe ou salva.
 - `escolha de vinculo`: proteger alguem, ouvir alguem, confiar ou se isolar.
+
+## Voz narrativa
+
+- Prefira `segunda pessoa` para aumentar imersao.
+- Evite narrar a maior parte das cenas como observacao externa de `Thulak`.
+- Reserve o nome `Thulak` para momentos em que outras figuras o nomeiam, para
+  titulos, ou para trechos em que a distancia dramatica for deliberada.
+- Prefira verbos de presenca e sensacao:
+  - `voce toca`
+  - `voce percebe`
+  - `voce recua`
+  - `you notice`
+  - `you grip`
+  - `you retreat`
 
 ## Finais macro da saga
 

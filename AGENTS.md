@@ -43,6 +43,7 @@ Leia tambem:
 - `docs/story-background.md`: pano de fundo, temas e jornada do heroi.
 - `docs/narrative-design.md`: estrutura dramatica, corrupcao, d6 opcional e finais.
 - `docs/chapter-structure.md`: campanha em 5 capitulos, ordem semilinear e travas por item.
+- `story/README.md`: area de autoria para escrever capitulos e cenas antes de levar para o jogo.
 
 ## Onde mexer
 
@@ -53,6 +54,7 @@ Leia tambem:
 - `docs/story-background.md`: lore canonica de alto nivel.
 - `docs/narrative-design.md`: design canonico da experiencia narrativa.
 - `docs/chapter-structure.md`: macroestrutura da campanha.
+- `story/`: area de escrita estruturada para o autor montar capitulos, cenas e decisoes.
 
 ## Convencoes do projeto
 
